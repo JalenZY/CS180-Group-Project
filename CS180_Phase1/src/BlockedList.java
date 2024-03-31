@@ -5,10 +5,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
 /**
- * FriendsList.java
+ * BlockedList.java
  *
  * This class provides all the methods necessary for the database to create, add, remove, edit, and compare
- * users to the Friends List - All Writing and removing from the database will be handled by the database
+ * users to the Blocked List - All Writing and removing from the database will be handled by the database
  *
  * TO DO // FIX // TO ASK ABOUT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
  *  - If user is unblocked, should we remove them from blocked list or just change their status to non-active????
@@ -18,7 +18,7 @@ import java.util.Objects;
  *
  * @author Thomas Ralston, L105
  *
- * @version April 4, 2024
+ * @version March 31, 2024
  *
  */
 public class BlockedList extends Object {
