@@ -100,7 +100,7 @@ public class UserProfile implements UserProfileInterface {
 
     //Method allows for username to be updated and changed
     //String will be replaced in file using database
-    public Void updateFirstname(String newfirstname) {
+    public String updateFirstname(String newfirstname) {
         this.userFirstname = newfirstname;
         //String string = toString(); //Calls old String
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(toString()))) {
@@ -111,7 +111,7 @@ public class UserProfile implements UserProfileInterface {
         }
         return null;
     }
-    public Void updateLastname(String newlastname) {
+    public String updateLastname(String newlastname) {
         this.userLastname = newlastname;
         //String string = toString(); //Calls old String
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(toString()))) {
@@ -122,7 +122,7 @@ public class UserProfile implements UserProfileInterface {
         }
         return null;
     }
-    public Void updatePassword(String newpassword) {
+    public String updatePassword(String newpassword) {
         this.password = newpassword;
         //String string = toString(); //Calls old String
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(toString()))) {
