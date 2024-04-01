@@ -3,6 +3,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Objects;
 /**
  * FriendsList.java
@@ -37,10 +38,11 @@ public class FriendsList extends Object {
     String user2LastName;
     String user1status; //Status of User1's acceptance of friendship - passed in by database
     String user2status; //Status of User2's acceptance of friendship - passed in by database
-    String date = "FIX THIS";  //date that friendship offer was made - resets to date that offer accepted or declined
+    private static Date date; //TimeStamp passed in by database - format:MM-dd-yyyy HH:mm:ss  -- Military Time
+    //String date = "FIX THIS";  //date that friendship offer was made - resets to date that offer accepted or declined
 
     //Find and set userIDs given usernames
-    public FriendsList(String username1, String username2, String user1status, String user2status, String date) {
+    public FriendsList(String username1, String username2, String user1status, String user2status, Date date) {
         this.username1 = username1;
         this.username2 = username2;
         this.user1status = user1status;
@@ -64,9 +66,10 @@ public class FriendsList extends Object {
             BufferedReader reader1 = new BufferedReader(new FileReader("userprofile.txt"));
 
             String checkLine;
-            //Format:userID,username,userFirstname,userLastname,email,password,birthday,gender,hobby1,hobby2,hobby3,hobby4,
-            // homeLocation,usersRegion,collegeName;
-            while (((checkLine = reader1.readLine()) != null) && !foundUser1 && !foundUser2) { //Run through file to find username1
+            //Format:userID,username,userFirstname,userLastname,email,password,birthday,gender,hobby1,hobby2,hobby3,
+            // hobby4,homeLocation,usersRegion,collegeName;
+            //Run through file to find username1
+            while (((checkLine = reader1.readLine()) != null) && !foundUser1 && !foundUser2) {
                 String[] selectedLine = checkLine.split(","); //Splits line up by comma to search
                 if (selectedLine[1].equals(username1) && !foundUser1) {
                     user1ID = selectedLine[0];
@@ -78,7 +81,7 @@ public class FriendsList extends Object {
             }
             //Create Friendship ID
             if (foundUser1 && foundUser2) {
-                friendshipID = String.format("FID_%s_%s_%s_%s", user1ID, user2ID, status, date); //Temporary friendship ID
+                friendshipID = String.format("FID_%s_%s_%s_%s", user1ID, user2ID, status, date); //Temp. friendshipID
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -89,7 +92,7 @@ public class FriendsList extends Object {
 
     //Sets userIDs given users Names
     public FriendsList(String user1FirstName, String user1LastName, String user2FirstName, String user2LastName,
-                       String user1status, String user2status, String date) {
+                       String user1status, String user2status, Date date) {
         this.user1FirstName = user1FirstName;
         this.user1LastName = user1LastName;
         this.user2FirstName = user2FirstName;
@@ -113,21 +116,23 @@ public class FriendsList extends Object {
             BufferedReader reader1 = new BufferedReader(new FileReader("userprofile.txt"));
 
             String checkLine;
-            //Format:userID,username,userFirstname,userLastname,email,password,birthday,gender,hobby1,hobby2,hobby3,hobby4,
-            // homeLocation,usersRegion,collegeName;
+            //Format:userID,username,userFirstname,userLastname,email,password,birthday,gender,hobby1,hobby2,hobby3,
+            // hobby4,homeLocation,usersRegion,collegeName;
             while ((checkLine = reader1.readLine()) != null && !foundUser1 && !foundUser2) {
                 String[] selectedLine = checkLine.split(","); //Splits line up by comma to search
-                if (selectedLine[2].equals(user1FirstName) && (selectedLine[3].equals(user1LastName)) && !foundUser1) { //Check and see if user1 name matches
+                if (selectedLine[2].equals(user1FirstName) && (selectedLine[3].equals(user1LastName)) && !foundUser1) {
+                    //Check and see if user1 name matches
                     user1ID = selectedLine[0];
                     foundUser1 = true;
-                } else if (selectedLine[2].equals(user2FirstName) && (selectedLine[3].equals(user2LastName) && !foundUser2)) {
+                } else if (selectedLine[2].equals(user2FirstName) && (selectedLine[3].equals(user2LastName)
+                        && !foundUser2)) {
                     user2ID = selectedLine[0];
                     foundUser2 = true;
                 }
             }
             //Create Friendship ID
             if (foundUser1 && foundUser2) {
-                friendshipID = String.format("FID_%s_%s_%s_%s", user1ID, user2ID, status, date); //Temporary friendship ID
+                friendshipID = String.format("FID_%s_%s_%s_%s", user1ID, user2ID, status, date); //Temp. friendshipID
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -138,7 +143,7 @@ public class FriendsList extends Object {
 
     //Checks to see if friendshipID already in file (meaning friendship already exists), if true, then return error
     //message, else return friendshipID for database to add to friendslist file.
-    public String AddFriend() {
+    public String addFriend() {
         try { //Check to see if friendship exists already
             //FileReader freader1 = new FileReader("friendslist.txt");
             BufferedReader reader1 = new BufferedReader(new FileReader("friendslist.txt")); //
@@ -166,7 +171,7 @@ public class FriendsList extends Object {
         return ("ERROR: METHOD FAILED");
     }
 
-    public String RemoveFriend() {
+    public String removeFriend() {
         try { //Check to see if friendship exists already
             BufferedReader reader1 = new BufferedReader(new FileReader("friendslist.txt")); //
 
@@ -193,7 +198,7 @@ public class FriendsList extends Object {
     }
 
     //Return String array of Friend's usernames that A user has
-    public ArrayList<String> FriendsCompList(String username1) {
+    public ArrayList<String> friendsCompList(String username1) {
         ArrayList<String> friendCompList = new ArrayList<>();
         try { //Check to see if friendship exists already
             BufferedReader reader1 = new BufferedReader(new FileReader("friendslist.txt")); //
@@ -221,94 +226,96 @@ public class FriendsList extends Object {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof FriendsList that)) return false;
-        return Objects.equals(getUser1ID(), that.getUser1ID()) && Objects.equals(getUser2ID(), that.getUser2ID()) && Objects.equals(getFriendshipID(), that.getFriendshipID()) && Objects.equals(getStatus(), that.getStatus()) && Objects.equals(getDate(), that.getDate());
+        return Objects.equals(getuser1ID(), that.getuser1ID()) && Objects.equals(getuser2ID(), that.getuser2ID())
+                && Objects.equals(getfriendshipID(), that.getfriendshipID()) &&
+                Objects.equals(getstatus(), that.getstatus()) && Objects.equals(getdate(), that.getdate());
     }
 
     //SETTERS - To be determined which are required
-    public void setUser1ID(String user1ID) {
+    public void setuser1ID(String user1ID) {
         this.user1ID = user1ID;
     }
-    public void setUser2ID(String user2ID) {
+    public void setuser2ID(String user2ID) {
         this.user2ID = user2ID;
     }
-    public void setFriendshipID(String friendshipID) {
+    public void setfriendshipID(String friendshipID) {
         this.friendshipID = friendshipID;
     }
-    public void setStatus(String status) {
+    public void setstatus(String status) {
         this.status = status;
     }
-    public void setSince(String since) {
+    public void setsince(String since) {
         this.since = since;
     }
-    public void setUsername1(String username1) {
+    public void setusername1(String username1) {
         this.username1 = username1;
     }
-    public void setUsername2(String username2) {
+    public void setusername2(String username2) {
         this.username2 = username2;
     }
-    public void setUser1FirstName(String user1FirstName) {
+    public void setuser1FirstName(String user1FirstName) {
         this.user1FirstName = user1FirstName;
     }
-    public void setUser1LastName(String user1LastName) {
+    public void setuser1LastName(String user1LastName) {
         this.user1LastName = user1LastName;
     }
-    public void setUser2FirstName(String user2FirstName) {
+    public void setuser2FirstName(String user2FirstName) {
         this.user2FirstName = user2FirstName;
     }
-    public void setUser2LastName(String user2LastName) {
+    public void setuser2LastName(String user2LastName) {
         this.user2LastName = user2LastName;
     }
-    public void setUser1status(String user1status) {
+    public void setuser1status(String user1status) {
         this.user1status = user1status;
     }
-    public void setUser2status(String user2status) {
+    public void setuser2status(String user2status) {
         this.user2status = user2status;
     }
-    public void setDate(String date) {
+    public void setdate(Date date) {
         this.date = date;
     }
 
     //GETTERS - To be determined which are required
-    public String getUser1ID() {
+    public String getuser1ID() {
         return user1ID;
     }
-    public String getUser2ID() {
+    public String getuser2ID() {
         return user2ID;
     }
-    public String getFriendshipID() {
+    public String getfriendshipID() {
         return friendshipID;
     }
-    public String getStatus() {
+    public String getstatus() {
         return status;
     }
-    public String getSince() {
+    public String getsince() {
         return since;
     }
-    public String getUsername1() {
+    public String getusername1() {
         return username1;
     }
-    public String getUsername2() {
+    public String getusername2() {
         return username2;
     }
-    public String getUser1FirstName() {
+    public String getuser1FirstName() {
         return user1FirstName;
     }
-    public String getUser1LastName() {
+    public String getuser1LastName() {
         return user1LastName;
     }
-    public String getUser2FirstName() {
+    public String getuser2FirstName() {
         return user2FirstName;
     }
-    public String getUser2LastName() {
+    public String getuser2LastName() {
         return user2LastName;
     }
-    public String getUser1status() {
+    public String getuser1status() {
         return user1status;
     }
-    public String getUser2status() {
+    public String getuser2status() {
         return user2status;
     }
-    public String getDate() {
+    public Date getdate() {
         return date;
     }
 } //End Class
