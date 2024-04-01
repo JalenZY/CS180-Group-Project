@@ -40,14 +40,3 @@
   Submitted on Vocareum by Thomas Ralston
 
 
-
-
-
-
-
-
-
-
-
-
-+ we need javadocs on all classes
