@@ -21,16 +21,16 @@ public class Messaging {
 
     //Fields
     private String messageID; //Unique Message ID
-    private static String senderID; //userID of sender
-    private static String recipientID; //UserID of recipient
-    private static Date timestamp; //TimeStamp passed in by database - format:MM-dd-yyyy HH:mm:ss  -- Military Time
-    private static String content; //Message Content
+    public String senderID; //userID of sender
+    public String recipientID; //UserID of recipient
+    private Date timestamp; //TimeStamp passed in by database - format:MM-dd-yyyy HH:mm:ss  -- Military Time
+    private String content; //Message Content
     private boolean isRead; //Status of message - if been read or not
 
     //Constructor - initialize values
     //MessageID Format: "senderID,recipientID,timestamp"
     public Messaging(String messageID, String senderID, String recipientID, Date timestamp, String content) {
-        this.messageID = messageID;
+        this.messageID = messageID; //This will be created as a count for everytime a message is sent
         this.senderID = senderID;
         this.recipientID = recipientID;
         this.timestamp = timestamp;
@@ -40,22 +40,22 @@ public class Messaging {
     }
 
     //Setters
-    public void setMessageID(String messageID) {
+    public void setmessageID(String messageID) {
         this.messageID = messageID;
     }
-    public void setSenderID(String senderID) {
+    public void setsenderID(String senderID) {
         this.senderID = senderID;
     }
-    public void setRecipientID(String recipientID) {
+    public void setrecipientID(String recipientID) {
         this.recipientID = recipientID;
     }
-    public void setTimestamp(Date timestamp) {
+    public void setimestamp(Date timestamp) {
         this.timestamp = timestamp;
     }
-    public void setContent(String content) {
+    public void setcontent(String content) {
         this.content = content;
     }
-    public void setRead(boolean read) {
+    public void setread(boolean read) {
         isRead = read;
     }
 
@@ -63,33 +63,33 @@ public class Messaging {
     public String getMessageID() {
         return messageID;
     }
-    public static String getSenderID() {
+    public String getsenderID() {
         return senderID;
     }
-    public static String getRecipientID() {
+    public String getrecipientID() {
         return recipientID;
     }
-    public static Date getTimestamp() {
+    public Date gettimestamp() {
         return timestamp;
     }
-    public static String getContent() {
-        content.replace(".--.",","); //Un-Encrypt message by replacing all dashes with commas, that way
-        return content;
+    public String getcontent() {
+        //content.replace(".--.",","); //Un-Encrypt message by replacing all dashes with commas, that way
+        return content.replace(".--.",","); //Un-Encrypt message by replacing all dashes with commas, that way
     }
 
-    public static String getConvertedContent(String string) { //Un-encrypt the given encrypted message string
-        string.replace(".--.",","); //Un-Encrypt message by replacing all dashes with commas, that way
-        return content;
+    public static String getconvertedContent(String string) { //Un-encrypt the given encrypted message string
+        //string.replace(".--.",","); //Un-Encrypt message by replacing all dashes with commas, that way
+        return string.replace(".--.",","); //Un-Encrypt message by replacing all dashes with commas, that way;
     }
     public boolean isRead() {
         return isRead;
     }
 
     //Prints given content in format ready for messaging.txt file
-    public String toString() {
+    public String tostring() {
         //Format: "messageID//senderID//recipientID//timestamp//isRead//content"
         return (String.format(("%s//%s//%s//%s//%s//%s"), messageID, senderID, recipientID, timestamp,isRead,
-                Messaging.getContent()));
+                content.replace(".--.",",")));
 
     }
 } //End Class
