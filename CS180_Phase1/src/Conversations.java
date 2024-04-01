@@ -1,3 +1,6 @@
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -7,6 +10,8 @@ import java.util.List;
  * This class contains all the methods required to format and add messages into a conversation
  * chain that can allow for users to view past messages per conversation. These conversation chains
  * will be stored in the conversations.txt file.
+ * Format: "conversationID///participantsID///messages
+ * messages format: "messageID//senderID//recipientID//timestamp//isRead//content"
  *
  * TO DO // FIX // TO ASK ABOUT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
  * - Format Date like: "MM-dd-yyyy HH:mm:ss" -- Military Time
@@ -18,7 +23,7 @@ import java.util.List;
  * @version March 31, 2024
  *
  */
-public class Conversations {
+public class Conversations implements ConversationsInterface {
 
     //Fields
     private String conversationID;
@@ -72,11 +77,6 @@ public class Conversations {
         // don't get printed when called???
     }
 
-//    public String generateMessageID() {
-//        return (String.format(("%s,%s,%s"), Messaging.getsenderID(), Messaging.getrecipientID(),
-//                Messaging.gettimestamp()));
-//    }
-
     //Setters
     public void setconversationID(String conversationID) {
         this.conversationID = conversationID;
@@ -104,5 +104,19 @@ public class Conversations {
         //messages format: "messageID//senderID//recipientID//timestamp//isRead//content"
         String totalmessages = messages.toString(); //Commas should be placed between messages content
         return (String.format("%s///%s///%s", conversationID, participantIDs, totalmessages));
+    }
+
+    public void writeToFile(String filename) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
+            // Write the conversation ID and participant IDs
+            writer.write(conversationID + "///" + String.join(",", participantIDs) + "///\n");
+
+            // Write each message
+            for (String message : messages) {
+                writer.write(message + "\n");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 } //End Class
