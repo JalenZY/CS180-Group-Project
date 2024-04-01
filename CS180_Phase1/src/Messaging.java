@@ -20,7 +20,7 @@ import java.io.FileWriter;
  * @version March 31, 2024
  *
  */
-public class Messaging {
+public class Messaging implements MessagingInterface {
 
     //Fields
     private String messageID; //Unique Message ID
