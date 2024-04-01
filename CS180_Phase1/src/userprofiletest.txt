@@ -1,0 +1,3 @@
+1,user1,John,Doe,password123,1990-01-01,male,Reading,Swimming,Traveling,Cooking,New York,USA,University of XYZ
+2,user2,Jane,Smith,abc123,1995-05-15,female,Painting,Hiking,Photography,Dancing,Los Angeles,USA,College of ABC
+3,user3,Michael,Johnson,test321,1988-12-20,male,Sports,Music,Gaming,Running,Chicago,USA,State University
