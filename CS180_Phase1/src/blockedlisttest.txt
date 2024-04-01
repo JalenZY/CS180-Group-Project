@@ -1,0 +1,3 @@
+1,2,BID_1_2_2024-03-31 12:00:00,Accepted,2024-03-31,user1,user2,John,Doe,Jane,Smith,2024-03-31 12:00:00
+3,4,BID_3_4_2024-03-31 12:00:00,Accepted,2024-03-31,user3,user4,Michael,Johnson,Emily,Davis,2024-03-31 12:00:00
+5,6,BID_5_6_2024-03-31 12:00:00,Accepted,2024-03-31,user5,user6,David,Miller,Sarah,Jones,2024-03-31 12:00:00
