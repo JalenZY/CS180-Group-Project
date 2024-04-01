@@ -1,7 +1,4 @@
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Objects;
@@ -9,7 +6,7 @@ import java.util.Objects;
  * BlockedList.java
  *
  * This class provides all the methods necessary for the database to create, add, remove, edit, and compare
- * users to the Blocked List - All Writing and removing from the database will be handled by the database
+ * users to the Blocked List - This class also writes and removes information to the blockedlist.txt 
  *
  * TO DO // FIX // TO ASK ABOUT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
  *  - If user is unblocked, should we remove them from blocked list or just change their status to non-active????
@@ -22,7 +19,7 @@ import java.util.Objects;
  * @version March 31, 2024
  *
  */
-public class BlockedList extends Object {
+public class BlockedList extends Object implements BlockedListInterface {
     //Fields
     String user1ID; //Primary Users ID
     String user2ID; //Blocked Users ID
@@ -125,6 +122,7 @@ public class BlockedList extends Object {
     public String addBlock() {
         try { //Check to see if block already exists
             //FileReader freader1 = new FileReader("friendslist.txt");
+            BufferedWriter writer = new BufferedWriter(new FileWriter("blockedlist.txt", true));
             BufferedReader reader1 = new BufferedReader(new FileReader("blockedlist.txt")); //
 
             String checkLine;
@@ -139,7 +137,9 @@ public class BlockedList extends Object {
             if (match) { //if match == true, so friendship already exists
                 return ("Block Record Already Exists"); //Database can do with as like
             } else {
-                return (checkID);
+                writer.write(checkID);
+                writer.newLine();
+                return checkID;
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -149,29 +149,58 @@ public class BlockedList extends Object {
         return ("ERROR: METHOD FAILED");
     }
 
+    //This method works by rewritting the entire blocked user list, but does not write the removed
+    //user to the list, effectively deleting the removed user
     public String removeBlock() {
-        try { //Check to see if friendship exists already
-            BufferedReader reader1 = new BufferedReader(new FileReader("blockedlist.txt")); //
+        try {
+            // Input file
+            File inputFile = new File("blockedlist.txt");
+            // Temp file
+            File tempFile = new File("tempBlockedlist.txt");
 
-            String checkLine;
+            BufferedReader reader = new BufferedReader(new FileReader(inputFile));
+            BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
+
+            String lineToRemove = String.format("BID_%s_%s_%s", user1ID, user2ID, date);
+            String currentLine;
+
             boolean match = false;
-            String checkID = String.format("BID_%s_%s_%s", user1ID, user2ID, date);
-            while ((checkLine = reader1.readLine()) != null && !match) {
-                if (checkLine.equals(checkID)) {
+
+            while ((currentLine = reader.readLine()) != null) {
+                // Trim newline when comparing with lineToRemove
+                String trimmedLine = currentLine.trim();
+                if (trimmedLine.equals(lineToRemove)) {
                     match = true;
+                    continue; // Skip writing this line
                 }
+                writer.write(currentLine + System.getProperty("line.separator"));
             }
-            if (match) { //if match == true, friendship exists
-                return (checkID); //returns blockedID to database to be searched for and removed from file
+            writer.close();
+            reader.close();
+
+            if (!match) {
+                return "Block Record Not Found";
+            }
+
+            // Delete the original file
+            if (!inputFile.delete()) {
+                return "Unable to delete the original file.";
+            }
+
+            // Rename the temp file to the original file name
+            boolean successful = tempFile.renameTo(inputFile);
+            if (!successful) {
+                // File was not renamed successfully
+                return "Failed to remove block record.";
             } else {
-                return ("Block Records Not Found"); //Database can do with as like
+                return "Block record removed successfully.";
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return ("ERROR: METHOD FAILED");
+        return "ERROR: METHOD FAILED";
     }
 
     //Return String array of Blocked usernames that A user has
