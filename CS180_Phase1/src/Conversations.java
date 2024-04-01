@@ -23,7 +23,7 @@ public class Conversations {
     //Fields
     private String conversationID;
     private List<String> participantIDs; //Passed in by database - could be formatted in clas
-    private List<Messaging> messages;
+    private List<String> messages;
 
     //Constructor
     public Conversations(String conversationID, List<String> participantIDs) {
@@ -34,11 +34,11 @@ public class Conversations {
 
     //Method to add message to conversation
     public void addMessage(Messaging message) {
-        messages.add(message);
+        messages.add(message.tostring());
     }
 
     //Method to get last message in conversation - not sure if will use
-    public Messaging getLastMessage() {
+    public String getLastMessage() {
         if (messages.isEmpty()) {
             return null;
         }
@@ -46,8 +46,10 @@ public class Conversations {
     }
 
     //Method to break apart and assign variables from an imported conversation file String
+    //Format: "conversationID//participantsID//message1,message2,message3,....
+    //message Format: "messageID//senderID//recipientID//timestamp//isRead//content"
     public Conversations ReadFormat(String conversationInfo) {
-        String[] parts = conversationInfo.split("//");
+        String[] parts = conversationInfo.split("///");
         String conversationID = parts[0];
         List<String> participantIDs = Arrays.asList(parts[1].split(","));
 
@@ -56,9 +58,13 @@ public class Conversations {
         if (parts.length > 2) {
             String[] messages2 = parts[2].split(","); //This might interfere with commas in original messages
             for (String messageContent : messages2) {
-                String newMessageContent = Messaging.getConvertedContent(messageContent);
-                Messaging message = new Messaging(GenerateMessageID(), participantIDs.get(0), participantIDs.get(1),
-                        null, newMessageContent);
+                List<String> messagedetails = Arrays.asList(messageContent.split("//"));
+                String messageID = messagedetails.getFirst();
+                String content = messagedetails.getLast();
+
+                String newMessageContent = Messaging.getconvertedContent(messageContent);
+                Messaging message = new Messaging(messageID, participantIDs.get(0), participantIDs.get(1),
+                        null, content);
                 conversation2.addMessage(message); //Creates new conversation set that will return message info
             }
         }
@@ -66,36 +72,37 @@ public class Conversations {
         // don't get printed when called???
     }
 
-    public String GenerateMessageID() {
-        return (String.format(("%s,%s,%s"), Messaging.getSenderID(), Messaging.getRecipientID(),
-                Messaging.getTimestamp()));
-    }
+//    public String generateMessageID() {
+//        return (String.format(("%s,%s,%s"), Messaging.getsenderID(), Messaging.getrecipientID(),
+//                Messaging.gettimestamp()));
+//    }
 
     //Setters
-    public void setConversationID(String conversationID) {
+    public void setconversationID(String conversationID) {
         this.conversationID = conversationID;
     }
-    public void setParticipantIDs(List<String> participantIDs) {
+    public void setparticipantIDs(List<String> participantIDs) {
         this.participantIDs = participantIDs;
     }
-    public void setMessages(List<Messaging> messages) {
+    public void setmessages(List<String> messages) {
         this.messages = messages;
     }
 
     //Getters
-    public String getConversationID() {
+    public String getconversationID() {
         return conversationID;
     }
-    public List<String> getParticipantIDs() {
+    public List<String> getparticipantIDs() {
         return participantIDs;
     }
-    public List<Messaging> getMessages() {
+    public List<String> getmessages() {
         return messages;
     }
 
     public String toString() {
-        //Format: "conversationID//participantsID//messages
+        //Format: "conversationID///participantsID///messages
+        //messages format: "messageID//senderID//recipientID//timestamp//isRead//content"
         String totalmessages = messages.toString(); //Commas should be placed between messages content
-        return (String.format("%s//%s//%s", conversationID, participantIDs, totalmessages));
+        return (String.format("%s///%s///%s", conversationID, participantIDs, totalmessages));
     }
 } //End Class
