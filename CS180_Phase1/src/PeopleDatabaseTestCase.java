@@ -6,7 +6,7 @@ import java.util.Date;
 /**
  * PeopleDatabaseTestCase.java
  *
- * This class contains testcases for the PeopleDatabase.java class
+ * This class contains test cases for the PeopleDatabase.java class
  * It includes tests that check the methods of the classes to ensure they work
  *
  * @author Juan Rodriguez, L105
@@ -16,18 +16,18 @@ public class PeopleDatabaseTestCase {
 
     private PeopleDatabase database;
     private UserProfile user1, user2;
-
     @Before
     public void setUp() {
         database = new PeopleDatabase();
-        user1 = new UserProfile("1", "user1", "John", "Doe", "john_doe@example.com", "password1");
-        user2 = new UserProfile("2", "user2", "Jane", "Doe", "jane_doe@example.com", "password2");
+        user1 = new UserProfile("1", "user1", "User", "One", "password", "2000-01-01", "Male", "Interest1", "Interest2", "Interest3", "City1", "Country1", "University1");
+        user2 = new UserProfile("2", "user2", "User", "Two", "password", "2000-01-01", "Female", "Interest4", "Interest5", "Interest6", "City2", "Country2", "University2");
     }
 
     @Test
     public void testAddUser() {
         database.addUser(user1);
         assertTrue(database.getUsers().containsKey(user1.getUserID()));
+        assertEquals(user1, database.getUsers().get(user1.getUserID()));
     }
 
     @Test
@@ -40,13 +40,12 @@ public class PeopleDatabaseTestCase {
     @Test
     public void testUpdateUserProfile() {
         database.addUser(user1);
-        UserProfile updatedProfile = new UserProfile(user1.getUserID(), "new_user", "John", "Doe", "newjohn_doe@example.com", "new_password");
+        UserProfile updatedProfile = new UserProfile("1", "user1_updated", "Updated", "User", "updatedPassword", "2000-01-01", "Male", "UpdatedInterest1", "UpdatedInterest2", "UpdatedInterest3","UpdatedInterest4", "UpdatedCity1", "UpdatedCountry1", "UpdatedUniversity1");
         database.updateUserProfile(user1.getUserID(), updatedProfile);
-        assertEquals("new_user", database.getUsers().get(user1.getUserID()).getUsername());
-        assertEquals("NewJohn", database.getUsers().get(user1.getUserID()).getUserFirstname());
-        assertEquals("Doe", database.getUsers().get(user1.getUserID()).getUserLastname());
-        assertEquals("newjohn_doe@example.com", database.getUsers().get(user1.getUserID()).getEmail());
-        assertEquals("new_password", database.getUsers().get(user1.getUserID()).getPassword());
+        assertEquals("user1_updated", database.getUsers().get(user1.getUserID()).getUsername());
+        assertEquals("Updated", database.getUsers().get(user1.getUserID()).getUserFirstname());
+        assertEquals("User", database.getUsers().get(user1.getUserID()).getUserLastname());
+        assertEquals("updatedPassword", database.getUsers().get(user1.getUserID()).getPassword());
     }
 
     @Test
@@ -61,6 +60,7 @@ public class PeopleDatabaseTestCase {
         database.unblockUser(user1.getUserID(), user2.getUserID(), new Date());
         assertFalse(database.getBlockedUsers().containsKey(user2.getUserID()));
     }
+
     @Test
     public void testRemoveFriend() {
         database.addUser(user1);
@@ -77,6 +77,4 @@ public class PeopleDatabaseTestCase {
         database.addFriend(user1.getUserID(), user2.getUserID(), new Date());
         assertTrue(database.getFriendships().containsKey(user1.getUserID() + "-" + user2.getUserID()));
     }
-
-
 }
