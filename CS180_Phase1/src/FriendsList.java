@@ -23,7 +23,7 @@ import java.util.Objects;
  * @version March 31, 2024
  *
  */
-public class FriendsList extends Object {
+public class FriendsList extends Object implements FriendsListInterface {
     //Fields
     String user1ID; //Primary Users ID
     String user2ID; //Friends ID
