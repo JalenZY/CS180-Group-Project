@@ -1,16 +1,19 @@
+import java.io.IOException;
 import java.util.Date;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 /**
  * Messaging.java
  *
  * This class contains all the methods required to format and store all Direct Messaging messages
- * to the messaging.txt file. The writing of this file will be handled by the database, but all
- * formatting will be taken care by this class
+ * to the messaging.txt file. This class also writes to the messages.txt file when a new message is created
+ * Note, This class also "encrypts" the messages by replacing all commas with ".--.", this is done
+ * to make sure that there are no errors when using split(",") later on in the classes.
  *
  * TO DO // FIX // TO ASK ABOUT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
  * - Format Date like: MM-dd-yyyy HH:mm:ss  -- Military Time
  * - Static Variables!!!!?????????
  * - Check Message "encryption"
- *
  *
  * @author Thomas Ralston, L105
  *
@@ -37,6 +40,10 @@ public class Messaging {
         this.content = content.replace(",",".--."); //Encrypt message by replacing all commas with dashes, that way
         // Split(",") doesn't prematurely split messages
         this.isRead = false;
+
+        Messaging message = new Messaging(messageID, senderID, recipientID, timestamp,content);
+// Call other methods to set message details if needed
+        message.writeToMessagesFile("messages.txt");
     }
 
     //Setters
@@ -91,5 +98,17 @@ public class Messaging {
         return (String.format(("%s//%s//%s//%s//%s//%s"), messageID, senderID, recipientID, timestamp,isRead,
                 content.replace(".--.",",")));
 
+    }
+
+    public void writeToMessagesFile(String filename) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename, true))) {
+            // Format the Messaging object for writing to file
+            String formattedMessage = this.toString();
+            // Write the formatted message to the file
+            writer.write(formattedMessage);
+            writer.newLine(); // Add a newline after each message
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 } //End Class
