@@ -15,4 +15,34 @@ need this
   2.A list of who submitted which parts of the assignment on Brightspace and Vocareum. 
         For example: Student 1 - Submitted Report on Brightspace. Student 2 - Submitted Vocareum workspace.
   3. A detailed description of each class. This should include the functionality included in the class, the testing done to verify it works properly, and its relationship to other classes in the project. 
+
+- UserProfile.java
+   Contains all methods for database to call to create, update, and replace all details     of a user's profile page. This will write to the file storing all userprofiles
+
+- BlockedListInterface.java
+  Lists all the methods and their paramaters used by BlockedList.java
+
+  - FriendsListInterface.java
+  Lists all the methods and their paramaters used by FriendsList.java
+
+- MessagingInterface.java
+  Lists all the methods and their paramaters used by Messaging.java
+
+  - ConversationsInterface.java
+  Lists all the methods and their paramaters used by Conversations.java
+
+  
+ 
+
+
+
+
+
+
+
+
+
+
+
+
 + we need javadocs on all classes
