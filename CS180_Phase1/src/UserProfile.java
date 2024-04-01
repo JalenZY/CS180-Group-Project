@@ -1,10 +1,12 @@
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Objects;
 /**
  * UserProfile.java
  *
  * Contains all methods for database to call to create, update, and replace all details of a
- * user's profile page **Does not write any information to file**
- *
+ * user's profile page. This will write to the file storing all userprofiles
  *
  *
  * @author Thomas Ralston, L105
@@ -12,7 +14,7 @@ import java.util.Objects;
  * //@version March 31, 2024
  *
  */
-public class UserProfile { //EXTENDS WHAT????
+public class UserProfile implements UserProfileInterface {
     private String userID; //Users unique ID code
     private String username; //Users selected username - name that associated with ID
     private String userFirstname; //Users first name
@@ -57,6 +59,22 @@ public class UserProfile { //EXTENDS WHAT????
         this.usersRegion = usersRegion;
         this.collegeName = collegeName;
 
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(toString()))) {
+            // Write user profile information to the file
+            writer.write(toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void writeChangesToFile(String filename, String updatedProfile) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
+            // Write the updated user profile information to the file
+            writer.write(updatedProfile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public String toString() { //Writes string in format for database
@@ -82,90 +100,138 @@ public class UserProfile { //EXTENDS WHAT????
 
     //Method allows for username to be updated and changed
     //String will be replaced in file using database
-    public String updateFirstname(String newfirstname) {
+    public Void updateFirstname(String newfirstname) {
         this.userFirstname = newfirstname;
         //String string = toString(); //Calls old String
-        return (String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s", userID, username, userFirstname,
-                userLastname, password, birthday, gender, hobby1, hobby2, hobby3, hobby4, homeLocation,
-                usersRegion, collegeName));
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(toString()))) {
+            // Write user profile information to the file
+            writer.write(toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
-    public String updateLastname(String newlastname) {
+    public Void updateLastname(String newlastname) {
         this.userLastname = newlastname;
         //String string = toString(); //Calls old String
-        return (String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s", userID, username, userFirstname,
-                userLastname, password, birthday, gender, hobby1, hobby2, hobby3, hobby4, homeLocation,
-                usersRegion, collegeName));
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(toString()))) {
+            // Write user profile information to the file
+            writer.write(toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
-    public String updatePassword(String newpassword) {
+    public Void updatePassword(String newpassword) {
         this.password = newpassword;
         //String string = toString(); //Calls old String
-        return (String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s", userID, username, userFirstname,
-                userLastname, password, birthday, gender, hobby1, hobby2, hobby3, hobby4, homeLocation,
-                usersRegion, collegeName));
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(toString()))) {
+            // Write user profile information to the file
+            writer.write(toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
     public String updateBirthday(String newbirthday) {
         this.birthday = newbirthday;
         //String string = toString(); //Calls old String
-        return (String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s", userID, username, userFirstname,
-                userLastname, password, birthday, gender, hobby1, hobby2, hobby3, hobby4, homeLocation,
-                usersRegion, collegeName));
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(toString()))) {
+            // Write user profile information to the file
+            writer.write(toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
     public String updateGender(String newgender) {
         this.gender = newgender;
         //String string = toString(); //Calls old String
-        return (String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s", userID, username, userFirstname,
-                userLastname, password, birthday, gender, hobby1, hobby2, hobby3, hobby4, homeLocation,
-                usersRegion, collegeName));
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(toString()))) {
+            // Write user profile information to the file
+            writer.write(toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
     public String updateHobby1(String newhobby1) {
         this.hobby1 = newhobby1;
         //String string = toString(); //Calls old String
-        return (String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s", userID, username, userFirstname,
-                userLastname, password, birthday, gender, hobby1, hobby2, hobby3, hobby4, homeLocation,
-                usersRegion, collegeName));
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(toString()))) {
+            // Write user profile information to the file
+            writer.write(toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
     public String updateHobby2(String newhobby2) {
         this.hobby2 = newhobby2;
         //String string = toString(); //Calls old String
 
-        return (String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s", userID, username, userFirstname,
-                userLastname, password, birthday, gender, hobby1, hobby2, hobby3, hobby4, homeLocation,
-                usersRegion, collegeName));
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(toString()))) {
+            // Write user profile information to the file
+            writer.write(toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
     public String updateHobby3(String newhobby3) {
         this.hobby3 = newhobby3;
         //String string = toString(); //Calls old String
-        return (String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s", userID, username, userFirstname,
-                userLastname, password, birthday, gender, hobby1, hobby2, hobby3, hobby4, homeLocation,
-                usersRegion, collegeName));
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(toString()))) {
+            // Write user profile information to the file
+            writer.write(toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
     public String updateHobby4(String newhobby4) {
         this.hobby4 = newhobby4;
         //String string = toString(); //Calls old String
-        return (String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s", userID, username, userFirstname,
-                userLastname, password, birthday, gender, hobby1, hobby2, hobby3, hobby4, homeLocation,
-                usersRegion, collegeName));
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(toString()))) {
+            // Write user profile information to the file
+            writer.write(toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
     public String updateHomeLocation(String newhomeLocation) {
         this.homeLocation = newhomeLocation;
         //String string = toString(); //Calls old String
-        return (String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s", userID, username, userFirstname,
-                userLastname, password, birthday, gender, hobby1, hobby2, hobby3, hobby4, homeLocation,
-                usersRegion, collegeName));
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(toString()))) {
+            // Write user profile information to the file
+            writer.write(toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
     public String updateUsersRegion(String newusersRegion) {
         this.usersRegion = newusersRegion;
         //String string = toString(); //Calls old String
-        return (String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s", userID, username, userFirstname,
-                userLastname, password, birthday, gender, hobby1, hobby2, hobby3, hobby4, homeLocation,
-                usersRegion, collegeName));
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(toString()))) {
+            // Write user profile information to the file
+            writer.write(toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
     public String updateCollegeName(String newcollegeName) {
         this.collegeName = newcollegeName;
         //String string = toString(); //Calls old String
-        return (String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s", userID, username, userFirstname,
-                userLastname, password, birthday, gender, hobby1, hobby2, hobby3, hobby4, homeLocation,
-                usersRegion, collegeName));
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(toString()))) {
+            // Write user profile information to the file
+            writer.write(toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     //Setters
