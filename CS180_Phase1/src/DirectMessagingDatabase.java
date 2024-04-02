@@ -26,8 +26,6 @@ public class DirectMessagingDatabase {
         String messageId = UUID.randomUUID().toString();
         Messaging message = new Messaging(messageId, conversationId, senderId, messageContent, new Date(), false);
         conversation.addMessage(message);
-
-        // Add conversation to sender's and recipients' conversation lists
         updateUserConversations(senderId, conversationId);
     }
 
@@ -60,15 +58,21 @@ public class DirectMessagingDatabase {
     // Delete a conversation
     public void deleteConversation(String conversationId) {
         conversations.remove(conversationId);
-        // Remove the conversation from all users' lists
-        for (List<String> list : userConversations.values()) {
-            list.remove(conversationId);
-        }
+        userConversations.values().forEach(list -> list.remove(conversationId));
     }
 
     // Helper method to update user conversations list
     private void updateUserConversations(String userId, String conversationId) {
         userConversations.computeIfAbsent(userId, k -> new ArrayList<>()).add(conversationId);
+    }
+
+    // Additional getters for class properties
+    public Map<String, Conversation> getConversations() {
+        return new HashMap<>(conversations);
+    }
+
+    public Map<String, List<String>> getUserConversationsMap() {
+        return new HashMap<>(userConversations);
     }
 }
 
@@ -83,19 +87,16 @@ class Conversation {
         this.participantIds = participantIds;
     }
 
-    public void addMessage(Messaging message) {
-        messages.add(message);
-    }
+    // Getters and Setters
+    public String getConversationId() { return conversationId; }
+    public List<String> getParticipantIds() { return new ArrayList<>(participantIds); }
+    public List<Messaging> getMessages() { return new ArrayList<>(messages); }
+    public boolean isArchived() { return archived; }
 
-    public void archive() {
-        this.archived = true;
-    }
+    public void setParticipantIds(List<String> participantIds) { this.participantIds = new ArrayList<>(participantIds); }
+    public void archive() { this.archived = true; }
 
-    public boolean isArchived() {
-        return archived;
-    }
-
-    // Additional methods for Conversation management
+    public void addMessage(Messaging message) { messages.add(message); }
 }
 
 class Messaging {
@@ -115,6 +116,16 @@ class Messaging {
         this.isRead = isRead;
     }
 
-    // Getters and setters
+    // Getters and Setters
+    public String getMessageId() { return messageId; }
+    public String getConversationId() { return conversationId; }
+    public String getSenderId() { return senderId; }
+    public String getContent() { return content; }
+    public Date getTimestamp() { return timestamp; }
+    public boolean isRead() { return isRead; }
+
+    public void setContent(String content) { this.content = content; }
+    public void setRead(boolean isRead) { this.isRead = isRead; }
 }
+
 
