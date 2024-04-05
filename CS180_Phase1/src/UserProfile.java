@@ -14,11 +14,11 @@ import java.util.Objects;
  * //@version March 31, 2024
  *
  */
-public class UserProfile implements UserProfileInterface {
+public class UserProfile extends Object {
     private String userID; //Users unique ID code
-    private String username; //Users selected username - name that associated with ID
-    private String userFirstname; //Users first name
-    private String userLastname; //Users Last name
+    private String userName; //Users selected username - name that associated with ID
+    private String userFirstName; //Users first name
+    private String userLastName; //Users Last name
     // private String email; //Users selected email
     private String password; //Users selected password
     private String birthday; //Users birthday dd/mm/yr
@@ -30,6 +30,7 @@ public class UserProfile implements UserProfileInterface {
     private String homeLocation; //Where user lives
     private String usersRegion; //Where users is from
     private String collegeName; //College user attends
+    private String toString2;
 
     //If information is skipped then a "--" will be inserted in info's place - handeled in Database
     //Certain information is required, while others are options
@@ -40,291 +41,145 @@ public class UserProfile implements UserProfileInterface {
     //**This Class will not write to the text file, that is left to the database**
 
     //Method to Write collected information to userprofile.txt file
-    public UserProfile(String userID, String username, String userFirstname, String userLastname,
-                       String password, String birthday, String gender, String hobby1, String hobby2, String hobby3,
-                       String hobby4, String homeLocation, String usersRegion, String collegeName) {
-        //Initialize and set all variables
-        this.userID = userID;
-        this.username = username;
-        this.userFirstname = userFirstname;
-        this.userLastname = userLastname;
-        this.password = password;
-        this.birthday = birthday;
-        this.gender = gender;
-        this.hobby1 = hobby1;
-        this.hobby2 = hobby2;
-        this.hobby3 = hobby3;
-        this.hobby4 = hobby4;
-        this.homeLocation = homeLocation;
-        this.usersRegion = usersRegion;
-        this.collegeName = collegeName;
+    public UserProfile (String userID) {
+    }
 
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(toString()))) {
+
+    public UserProfile(String userID1, String username1, String userFirstname1, String userLastname1,
+                       String password1, String birthday1, String gender1, String hobby01, String hobby02,
+                       String hobby03, String hobby04, String homeLocation1, String usersRegion1, String collegeName1) {
+        //Initialize and set all variables
+        this.userID = userID1;
+        this.userName = username1;
+        this.userFirstName = userFirstname1;
+        this.userLastName = userLastname1;
+        this.password = password1;
+        this.birthday = birthday1;
+        this.gender = gender1;
+        this.hobby1 = hobby01;
+        this.hobby2 = hobby02;
+        this.hobby3 = hobby03;
+        this.hobby4 = hobby04;
+        this.homeLocation = homeLocation1;
+        this.usersRegion = usersRegion1;
+        this.collegeName = collegeName1;
+
+        try (BufferedWriter writer = new BufferedWriter(toString())) {
             // Write user profile information to the file
             writer.write(toString());
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-    }
-
-    public void writeChangesToFile(String filename, String updatedProfile) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
-            // Write the updated user profile information to the file
-            writer.write(updatedProfile);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     public String toString() { //Writes string in format for database
         //Format:username,userFirstname,userLastname,email,password,birthday,gender,hobby1,hobby2,hobby3,hobby4,
         // homeLocation,usersRegion,collegeName;
-        return (String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s", username, userFirstname, userLastname,
-                password, birthday, gender, hobby1, hobby2, hobby3, hobby4, homeLocation, usersRegion, collegeName));
+        toString2 = String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s", userName, userFirstName, userLastName,
+                password, birthday, gender, hobby1, hobby2, hobby3, hobby4, homeLocation, usersRegion, collegeName);
+        return (toString2);
     }
 
-    public boolean equals(Object o) {
+    public boolean equals(Object o) { //UPDATE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         if (this == o) return true;
         if (!(o instanceof UserProfile that)) return false;
-        return Objects.equals(userID, that.userID) && Objects.equals(getusername(), that.getusername()) &&
-                Objects.equals(getuserFirstname(), that.getuserFirstname()) && Objects.equals(getuserLastname(),
-                that.getuserLastname()) && Objects.equals(getpassword(),
-                that.getpassword()) && Objects.equals(getbirthday(), that.getbirthday()) && Objects.equals(getgender(),
-                that.getgender()) && Objects.equals(gethobby1(), that.gethobby1()) && Objects.equals(gethobby2(),
-                that.gethobby2()) && Objects.equals(gethobby3(), that.gethobby3()) && Objects.equals(gethobby4(),
-                that.gethobby4()) && Objects.equals(gethomeLocation(), that.gethomeLocation()) &&
-                Objects.equals(getusersRegion(), that.getusersRegion()) && Objects.equals(getcollegeName(),
-                that.getcollegeName());
-    }
-
-    //Method allows for username to be updated and changed
-    //String will be replaced in file using database
-    public String updateFirstname(String newfirstname) {
-        this.userFirstname = newfirstname;
-        //String string = toString(); //Calls old String
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(toString()))) {
-            // Write user profile information to the file
-            writer.write(toString());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-    public String updateLastname(String newlastname) {
-        this.userLastname = newlastname;
-        //String string = toString(); //Calls old String
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(toString()))) {
-            // Write user profile information to the file
-            writer.write(toString());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-    public String updatePassword(String newpassword) {
-        this.password = newpassword;
-        //String string = toString(); //Calls old String
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(toString()))) {
-            // Write user profile information to the file
-            writer.write(toString());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-    public String updateBirthday(String newbirthday) {
-        this.birthday = newbirthday;
-        //String string = toString(); //Calls old String
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(toString()))) {
-            // Write user profile information to the file
-            writer.write(toString());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-    public String updateGender(String newgender) {
-        this.gender = newgender;
-        //String string = toString(); //Calls old String
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(toString()))) {
-            // Write user profile information to the file
-            writer.write(toString());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-    public String updateHobby1(String newhobby1) {
-        this.hobby1 = newhobby1;
-        //String string = toString(); //Calls old String
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(toString()))) {
-            // Write user profile information to the file
-            writer.write(toString());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-    public String updateHobby2(String newhobby2) {
-        this.hobby2 = newhobby2;
-        //String string = toString(); //Calls old String
-
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(toString()))) {
-            // Write user profile information to the file
-            writer.write(toString());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-    public String updateHobby3(String newhobby3) {
-        this.hobby3 = newhobby3;
-        //String string = toString(); //Calls old String
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(toString()))) {
-            // Write user profile information to the file
-            writer.write(toString());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-    public String updateHobby4(String newhobby4) {
-        this.hobby4 = newhobby4;
-        //String string = toString(); //Calls old String
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(toString()))) {
-            // Write user profile information to the file
-            writer.write(toString());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-    public String updateHomeLocation(String newhomeLocation) {
-        this.homeLocation = newhomeLocation;
-        //String string = toString(); //Calls old String
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(toString()))) {
-            // Write user profile information to the file
-            writer.write(toString());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-    public String updateUsersRegion(String newusersRegion) {
-        this.usersRegion = newusersRegion;
-        //String string = toString(); //Calls old String
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(toString()))) {
-            // Write user profile information to the file
-            writer.write(toString());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-    public String updateCollegeName(String newcollegeName) {
-        this.collegeName = newcollegeName;
-        //String string = toString(); //Calls old String
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(toString()))) {
-            // Write user profile information to the file
-            writer.write(toString());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return Objects.equals(userID, that.userID) && Objects.equals(getUserName(), that.getUserName()) &&
+                Objects.equals(getUserFirstName(), that.getUserFirstName()) && Objects.equals(getUserLastName(),
+                that.getUserLastName()) && Objects.equals(getPassword(),
+                that.getPassword()) && Objects.equals(getBirthday(), that.getBirthday()) && Objects.equals(getGender(),
+                that.getGender()) && Objects.equals(getHobby1(), that.getHobby1()) && Objects.equals(getHobby2(),
+                that.getHobby2()) && Objects.equals(getHobby3(), that.getHobby3()) && Objects.equals(getHobby4(),
+                that.getHobby4()) && Objects.equals(getHomeLocation(), that.getHomeLocation()) &&
+                Objects.equals(getUsersRegion(), that.getUsersRegion()) && Objects.equals(getCollegeName(),
+                that.getCollegeName());
     }
 
     //Setters
-    public void setuserID(String userID) {
-        this.userID = userID;
+    public void setUserID(String userID) {
+        userID = userID;
     }
-    public void setusername(String username) {
-        this.username = username;
+    public void setUserName(String username) {
+        this.userName = username;
     }
-    public void setuserFirstname(String userFirstname) {
-        this.userFirstname = userFirstname;
+    public void setUserFirstName(String userFirstname) {
+        this.userFirstName = userFirstname;
     }
-    public void setuserLastname(String userLastname) {
-        this.userLastname = userLastname;
+    public void setUserLastName(String userLastname) {
+        this.userLastName = userLastname;
     }
-//    public void setemail(String email) {
-//        this.email = email;
-//    }
-    public void setpassword(String password) {
-        this.password = password;
+    public void setPassword(String password1) {
+        this.password = password1;
     }
-    public void setbirthday(String birthday) {
-        this.birthday = birthday;
+    public void setBirthday(String birthday1) {
+        this.birthday = birthday1;
     }
-    public void setgender(String gender) {
-        this.gender = gender;
+    public void setGender(String gender1) {
+        this.gender = gender1;
     }
-    public void sethobby1(String hobby1) {
-        this.hobby1 = hobby1;
+    public void setHobby1(String hobby01) {
+        this.hobby1 = hobby01;
     }
-    public void sethobby2(String hobby2) {
-        this.hobby2 = hobby2;
+    public void setHobby2(String hobby02) {
+        this.hobby2 = hobby02;
     }
-    public void sethobby3(String hobby3) {
-        this.hobby3 = hobby3;
+    public void setHobby3(String hobby03) {
+        this.hobby3 = hobby03;
     }
-    public void sethobby4(String hobby4) {
-        this.hobby4 = hobby4;
+    public void setHobby4(String hobby04) {
+        this.hobby4 = hobby04;
     }
-    public void sethomeLocation(String homeLocation) {
-        this.homeLocation = homeLocation;
+    public void setHomeLocation(String homeLocation1) {
+        this.homeLocation = homeLocation1;
     }
-    public void setusersRegion(String usersRegion) {
-        this.usersRegion = usersRegion;
+    public void setUsersRegion(String usersRegion1) {
+        this.usersRegion = usersRegion1;
     }
-    public void setcollegeName(String collegeName) {
-        this.collegeName = collegeName;
+    public void setCollegeName(String collegeName1) {
+        this.collegeName = collegeName1;
     }
 
     //Getters
     public String getUserID() {
         return userID;
     }
-    public String getusername() {
-        return username;
+    public String getUserName() {
+        return userName;
     }
-    public String getuserFirstname() {
-        return userFirstname;
+    public String getUserFirstName() {
+        return userFirstName;
     }
-    public String getuserLastname() {
-        return userLastname;
+    public String getUserLastName() {
+        return userLastName;
     }
-//    public String getemail() {
-//        return email;
-//    }
-    public String getpassword() {
+    public String getPassword() {
         return password;
     }
-    public String getbirthday() {
+    public String getBirthday() {
         return birthday;
     }
-    public String getgender() {
+    public String getGender() {
         return gender;
     }
-    public String gethobby1() {
+    public String getHobby1() {
         return hobby1;
     }
-    public String gethobby2() {
+    public String getHobby2() {
         return hobby2;
     }
-    public String gethobby3() {
+    public String getHobby3() {
         return hobby3;
     }
-    public String gethobby4() {
+    public String getHobby4() {
         return hobby4;
     }
-    public String gethomeLocation() {
+    public String getHomeLocation() {
         return homeLocation;
     }
-    public String getusersRegion() {
+    public String getUsersRegion() {
         return usersRegion;
     }
-    public String getcollegeName() {
+    public String getCollegeName() {
         return collegeName;
     }
 } //End Class
