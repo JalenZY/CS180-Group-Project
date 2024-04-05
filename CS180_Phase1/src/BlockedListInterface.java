@@ -1,45 +1,67 @@
 import java.util.ArrayList;
 import java.util.Date;
+
 /**
  * BlockedListInterface.java
- *
+ * <p>
  * Lists all the methods and their paramaters used by BlockedList.java
  *
  * @author ThomasRalton, L105
  * @version April 1, 2024
  */
 public interface BlockedListInterface {
-
     // Methods
-    String addBlock();
-    String removeBlock();
     ArrayList<String> blockedCompList(String username1);
 
-    // Getters
-    String getuser1ID();
-    String getuser2ID();
-    String getblockedID();
-    String getstatus();
-    String getsince();
-    String getusername1();
-    String getusername2();
-    String getuser1FirstName();
-    String getuser1LastName();
-    String getuser2FirstName();
-    String getuser2LastName();
-    Date getdate();
+    boolean equals(Object o);
 
     // Setters
-    void setuser1ID(String user1ID);
-    void setuser2ID(String user2ID);
-    void setblockedID(String blockedID);
-    void setstatus(String status);
-    void setsince(String since);
-    void setusername1(String username1);
-    void setusername2(String username2);
-    void setuser1FirstName(String user1FirstName);
-    void setuser1LastName(String user1LastName);
-    void setuser2FirstName(String user2FirstName);
-    void setuser2LastName(String user2LastName);
-    void setdate(Date date);
+    void setUser1ID(String user1ID);
+
+    void setUser2ID(String user2ID);
+
+    void setBlockedID(String blockedID);
+
+    void setStatus(String status);
+
+    void setSince(String since);
+
+    void setUserName1(String username1);
+
+    void setUserName2(String username2);
+
+    void setUser1FirstName(String user1FirstName);
+
+    void setUser1LastName(String user1LastName);
+
+    void setUser2FirstName(String user2FirstName);
+
+    void setUser2LastName(String user2LastName);
+
+    void setDate(Date date);
+
+    // Getters
+    String getUser1ID();
+
+    String getUser2ID();
+
+    String getBlockedID();
+
+    String getStatus();
+
+    String getSince();
+
+    String getUserName1();
+
+    String getUserName2();
+
+    String getUser1FirstName();
+
+    String getUser1LastName();
+
+    String getUser2FirstName();
+
+    String getUser2LastName();
+
+    Date getDate();
 }
