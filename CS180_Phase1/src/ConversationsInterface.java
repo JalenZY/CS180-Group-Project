@@ -8,17 +8,25 @@ import java.util.List;
  * @version April 1, 2024
  */
 public interface ConversationsInterface {
-    // Method
-    void addMessage(Messaging message);
+    // Method to add message to conversation
+    public void addMessage(Messaging message);
 
-    // Getters
-    String getLastMessage();
-    String getconversationID();
-    List<String> getparticipantIDs();
-    List<String> getmessages();
+    // Method to get last message in conversation
+    public String getLastMessage();
+
+    // Method to break apart and assign variables from an imported conversation file String
+    public Conversations ReadFormat(String conversationInfo);
 
     // Setters
-    void setconversationID(String conversationID);
-    void setparticipantIDs(List<String> participantIDs);
-    void setmessages(List<String> messages);
+    public void setconversationID(String conversationID);
+    public void setparticipantIDs(List<String> participantIDs);
+    public void setmessages(List<String> messages);
+
+    // Getters
+    public String getconversationID();
+    public List<String> getparticipantIDs();
+    public List<String> getmessages();
+
+    // Method to write conversation to a file
+    public void writeToFile(String filename);
 }
