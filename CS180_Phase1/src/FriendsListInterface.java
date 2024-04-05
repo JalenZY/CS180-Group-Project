@@ -10,40 +10,41 @@ import java.util.Date;
  */
 public interface FriendsListInterface {
 
-    // Methods
-    String addFriend();
-    String removeFriend();
-    ArrayList<String> friendsCompList(String username1);
+    // Method to return a list of friend's usernames for a given user
+    public ArrayList<String> friendsCompList(String username1);
 
-    // Getters
-    String getuser1ID();
-    String getuser2ID();
-    String getfriendshipID();
-    String getstatus();
-    String getsince();
-    String getusername1();
-    String getusername2();
-    String getuser1FirstName();
-    String getuser1LastName();
-    String getuser2FirstName();
-    String getuser2LastName();
-    String getuser1status();
-    String getuser2status();
-    Date getdate();
+    // Method to check if given Friendship "o" is equal to classes friendship
+    public boolean equals(Object o);
 
     // Setters
-    void setuser1ID(String user1ID);
-    void setuser2ID(String user2ID);
-    void setfriendshipID(String friendshipID);
-    void setstatus(String status);
-    void setsince(String since);
-    void setusername1(String username1);
-    void setusername2(String username2);
-    void setuser1FirstName(String user1FirstName);
-    void setuser1LastName(String user1LastName);
-    void setuser2FirstName(String user2FirstName);
-    void setuser2LastName(String user2LastName);
-    void setuser1status(String user1status);
-    void setuser2status(String user2status);
-    void setdate(Date date);
+    public void setUser1ID(String user1ID);
+    public void setUser2ID(String user2ID);
+    public void setFriendshipID(String friendshipID);
+    public void setStatus(String status);
+    public void setSince(String since);
+    public void setUsername1(String username1);
+    public void setUsername2(String username2);
+    public void setUser1FirstName(String user1FirstName);
+    public void setUser1LastName(String user1LastName);
+    public void setUser2FirstName(String user2FirstName);
+    public void setUser2LastName(String user2LastName);
+    public void setUser1status(String user1status);
+    public void setUser2status(String user2status);
+    public void setDate(Date date);
+
+    // Getters
+    public String getUser1ID();
+    public String getUser2ID();
+    public String getFriendshipID();
+    public String getStatus();
+    public String getSince();
+    public String getUserName1();
+    public String getUsername2();
+    public String getUser1FirstName();
+    public String getUser1LastName();
+    public String getUser2FirstName();
+    public String getUser2LastName();
+    public String getUser1Status();
+    public String getUser2Status();
+    public Date getDate();
 }
