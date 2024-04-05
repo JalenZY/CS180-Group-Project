@@ -6,7 +6,7 @@ import java.util.Objects;
  * BlockedList.java
  *
  * This class provides all the methods necessary for the database to create, add, remove, edit, and compare
- * users to the Blocked List - This class also writes and removes information to the blockedlist.txt 
+ * users to the Blocked List - This class also writes and removes information to the blockedlist.txt
  *
  * TO DO // FIX // TO ASK ABOUT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
  *  - If user is unblocked, should we remove them from blocked list or just change their status to non-active????
@@ -19,8 +19,8 @@ import java.util.Objects;
  * @version March 31, 2024
  *
  */
-public class BlockedList extends Object implements BlockedListInterface {
-    //Fields
+public class BlockedList extends Object {
+    //Fields 
     String user1ID; //Primary Users ID
     String user2ID; //Blocked Users ID
     String blockedID; //Unique identifier given to each Blocked relationship
@@ -119,89 +119,6 @@ public class BlockedList extends Object implements BlockedListInterface {
 
     //Checks to see if blockedID already in file (meaning friendship already exists), if true, then return error
     //message, else return blockedID for database to add to friendslist file.
-    public String addBlock() {
-        try { //Check to see if block already exists
-            //FileReader freader1 = new FileReader("friendslist.txt");
-            BufferedWriter writer = new BufferedWriter(new FileWriter("blockedlist.txt", true));
-            BufferedReader reader1 = new BufferedReader(new FileReader("blockedlist.txt")); //
-
-            String checkLine;
-            boolean match = false;
-            String checkID = String.format("BID_%s_%s_%s", user1ID, user2ID, date);
-            while ((checkLine = reader1.readLine()) != null && !match) {
-                //String checkID = String.format("FID_%s_%s", user1ID, user2ID);
-                if (checkLine.equals(checkID)) {
-                    match = true; //Check to make sure record doesn't already exist
-                }
-            }
-            if (match) { //if match == true, so friendship already exists
-                return ("Block Record Already Exists"); //Database can do with as like
-            } else {
-                writer.write(checkID);
-                writer.newLine();
-                return checkID;
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return ("ERROR: METHOD FAILED");
-    }
-
-    //This method works by rewritting the entire blocked user list, but does not write the removed
-    //user to the list, effectively deleting the removed user
-    public String removeBlock() {
-        try {
-            // Input file
-            File inputFile = new File("blockedlist.txt");
-            // Temp file
-            File tempFile = new File("tempBlockedlist.txt");
-
-            BufferedReader reader = new BufferedReader(new FileReader(inputFile));
-            BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
-
-            String lineToRemove = String.format("BID_%s_%s_%s", user1ID, user2ID, date);
-            String currentLine;
-
-            boolean match = false;
-
-            while ((currentLine = reader.readLine()) != null) {
-                // Trim newline when comparing with lineToRemove
-                String trimmedLine = currentLine.trim();
-                if (trimmedLine.equals(lineToRemove)) {
-                    match = true;
-                    continue; // Skip writing this line
-                }
-                writer.write(currentLine + System.getProperty("line.separator"));
-            }
-            writer.close();
-            reader.close();
-
-            if (!match) {
-                return "Block Record Not Found";
-            }
-
-            // Delete the original file
-            if (!inputFile.delete()) {
-                return "Unable to delete the original file.";
-            }
-
-            // Rename the temp file to the original file name
-            boolean successful = tempFile.renameTo(inputFile);
-            if (!successful) {
-                // File was not renamed successfully
-                return "Failed to remove block record.";
-            } else {
-                return "Block record removed successfully.";
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return "ERROR: METHOD FAILED";
-    }
 
     //Return String array of Blocked usernames that A user has
     public ArrayList<String> blockedCompList(String username1) {
@@ -232,84 +149,84 @@ public class BlockedList extends Object implements BlockedListInterface {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof BlockedList that)) return false;
-        return Objects.equals(getuser1ID(), that.getuser1ID()) && Objects.equals(getuser2ID(),
-                that.getuser2ID()) && Objects.equals(getblockedID(), that.getblockedID()) && Objects.equals(getstatus(),
-                that.getstatus()) && Objects.equals(getdate(), that.getdate());
+        return Objects.equals(getUser1ID(), that.getUser1ID()) && Objects.equals(getUser2ID(),
+                that.getUser2ID()) && Objects.equals(getBlockedID(), that.getBlockedID()) && Objects.equals(getStatus(),
+                that.getStatus()) && Objects.equals(getDate(), that.getDate());
     }
 
     //SETTERS - To be determined which are required
-    public void setuser1ID(String user1ID) {
+    public void setUser1ID(String user1ID) {
         this.user1ID = user1ID;
     }
-    public void setuser2ID(String user2ID) {
+    public void setUser2ID(String user2ID) {
         this.user2ID = user2ID;
     }
-    public void setblockedID(String blockedID) {
+    public void setBlockedID(String blockedID) {
         this.blockedID = blockedID;
     }
-    public void setstatus(String status) {
+    public void setStatus(String status) {
         this.status = status;
     }
-    public void setsince(String since) {
+    public void setSince(String since) {
         this.since = since;
     }
-    public void setusername1(String username1) {
+    public void setUsername1(String username1) {
         this.username1 = username1;
     }
-    public void setusername2(String username2) {
+    public void setUsername2(String username2) {
         this.username2 = username2;
     }
-    public void setuser1FirstName(String user1FirstName) {
+    public void setUser1FirstName(String user1FirstName) {
         this.user1FirstName = user1FirstName;
     }
-    public void setuser1LastName(String user1LastName) {
+    public void setUser1LastName(String user1LastName) {
         this.user1LastName = user1LastName;
     }
-    public void setuser2FirstName(String user2FirstName) {
+    public void setUser2FirstName(String user2FirstName) {
         this.user2FirstName = user2FirstName;
     }
-    public void setuser2LastName(String user2LastName) {
+    public void setUser2LastName(String user2LastName) {
         this.user2LastName = user2LastName;
     }
-    public void setdate(Date date) {
+    public void setDate(Date date) {
         this.date = date;
     }
 
     //GETTERS - To be determined which are required
-    public String getuser1ID() {
+    public String getUser1ID() {
         return user1ID;
     }
-    public String getuser2ID() {
+    public String getUser2ID() {
         return user2ID;
     }
-    public String getblockedID() {
+    public String getBlockedID() {
         return blockedID;
     }
-    public String getstatus() {
+    public String getStatus() {
         return status;
     }
-    public String getsince() {
+    public String getSince() {
         return since;
     }
-    public String getusername1() {
+    public String getUsername1() {
         return username1;
     }
-    public String getusername2() {
+    public String getUsername2() {
         return username2;
     }
-    public String getuser1FirstName() {
+    public String getUser1FirstName() {
         return user1FirstName;
     }
-    public String getuser1LastName() {
+    public String getUser1LastName() {
         return user1LastName;
     }
-    public String getuser2FirstName() {
+    public String getUser2FirstName() {
         return user2FirstName;
     }
-    public String getuser2LastName() {
+    public String getUser2LastName() {
         return user2LastName;
     }
-    public Date getdate() {
+    public Date getDate() {
         return date;
     }
 } //End Class
