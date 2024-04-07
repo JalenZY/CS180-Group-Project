@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.util.Date;
 /**
  * MessagingInterface.java
@@ -8,21 +9,27 @@ import java.util.Date;
  * @version April 1, 2024
  */
 public interface MessagingInterface {
-    // Setters
-    void setmessageID(String messageID);
-    void setsenderID(String senderID);
-    void setrecipientID(String recipientID);
-    void setimestamp(Date timestamp);
-    void setcontent(String content);
-    void setread(boolean read);
+    // Method to write the message to the messages file
+    void writeToMessagesFile(String filename) throws IOException;
 
-    // Getters
+    // Getter for the message ID
     String getMessageID();
-    String getsenderID();
-    String getrecipientID();
-    Date gettimestamp();
-    String getcontent();
+
+    // Getter for the conversation ID
+    String getConversationID();
+
+    // Getter for the sender ID
+    String getSenderID();
+
+    // Getter for the recipient ID
+    String getRecipientID();
+
+    // Getter for the timestamp
+    String getTimestamp();
+
+    // Getter for the read status
     boolean isRead();
-    //static String getconvertedContent(String string);
-    String tostring();
+
+    // Getter for the message content
+    String getContent();
 }
