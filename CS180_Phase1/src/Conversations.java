@@ -23,12 +23,14 @@ import java.util.List;
  * @version March 31, 2024
  *
  */
-public class Conversations implements ConversationsInterface {
+public class Conversations {
 
     //Fields
     private String conversationID;
     private List<String> participantIDs; //Passed in by database - could be formatted in clas
     private List<String> messages;
+    private boolean archived;
+    private boolean isRead;
 
     //Constructor
     public Conversations(String conversationID, List<String> participantIDs) {
@@ -39,7 +41,7 @@ public class Conversations implements ConversationsInterface {
 
     //Method to add message to conversation
     public void addMessage(Messaging message) {
-        messages.add(message.tostring());
+        messages.add(message.toString()); //Adds the message plus extra info about it in proper format
     }
 
     //Method to get last message in conversation - not sure if will use
@@ -52,7 +54,7 @@ public class Conversations implements ConversationsInterface {
 
     //Method to break apart and assign variables from an imported conversation file String
     //Format: "conversationID//participantsID//message1,message2,message3,....
-    //message Format: "messageID//senderID//recipientID//timestamp//isRead//content"
+    //message Format: "messageID//conversationID//senderID//recipientID//timestamp//isRead//content"
     public Conversations ReadFormat(String conversationInfo) {
         String[] parts = conversationInfo.split("///");
         String conversationID = parts[0];
@@ -62,14 +64,17 @@ public class Conversations implements ConversationsInterface {
 
         if (parts.length > 2) {
             String[] messages2 = parts[2].split(","); //This might interfere with commas in original messages
-            for (String messageContent : messages2) {
-                List<String> messagedetails = Arrays.asList(messageContent.split("//"));
-                String messageID = messagedetails.getFirst();
-                String content = messagedetails.getLast();
+            for (String messageContent : messages2) { //messages2 in format of messages toString
+                //Format: "messageID//conversationID//senderID//recipientID//timestamp//isRead//content"
+                List<String> messageDetails = Arrays.asList(messageContent.split("//"));
+                String messageID = messageDetails.get(0);
+                String timestamp = messageDetails.get(4); // Timestamp is at index 4
+                boolean isRead = Boolean.parseBoolean(messageDetails.get(5));
+                String content = messageDetails.get(6);
 
-                String newMessageContent = Messaging.getconvertedContent(messageContent);
-                Messaging message = new Messaging(messageID, participantIDs.get(0), participantIDs.get(1),
-                        null, content);
+                String newMessageContent = Messaging.getConvertedContent(messageContent);
+                Messaging message = new Messaging(messageID, conversationID, participantIDs.get(0), participantIDs.get(1),
+                        timestamp, content, isRead);
                 conversation2.addMessage(message); //Creates new conversation set that will return message info
             }
         }
@@ -78,32 +83,45 @@ public class Conversations implements ConversationsInterface {
     }
 
     //Setters
-    public void setconversationID(String conversationID) {
+    public void setConversationID(String conversationID) {
         this.conversationID = conversationID;
     }
-    public void setparticipantIDs(List<String> participantIDs) {
-        this.participantIDs = participantIDs;
+    public void setParticipantIDs(List<String> participantIDs) {
+        this.participantIDs = participantIDs; //new ArrayList<>(participantIds);????
     }
-    public void setmessages(List<String> messages) {
+    public void setMessages(List<String> messages) {
         this.messages = messages;
     }
 
+//    public void setMessages(List<Messaging> messages) {
+//        this.messages = messages;
+//    }
+
+    public void archive() {
+        this.archived = true;
+    }
+
     //Getters
-    public String getconversationID() {
+    public String getConversationID() {
         return conversationID;
     }
-    public List<String> getparticipantIDs() {
+    public List<String> getParticipantIDs() {
         return participantIDs;
+        //return new ArrayList<>(participantIds);
     }
-    public List<String> getmessages() {
+    public List<String> getMessages() {
         return messages;
+        //return new ArrayList<>(messages);
+    }
+    public boolean isArchived() {
+        return archived;
     }
 
     public String toString() {
         //Format: "conversationID///participantsID///messages
         //messages format: "messageID//senderID//recipientID//timestamp//isRead//content"
-        String totalmessages = messages.toString(); //Commas should be placed between messages content
-        return (String.format("%s///%s///%s", conversationID, participantIDs, totalmessages));
+        String totalMessages = messages.toString(); //Commas should be placed between messages content
+        return (String.format("%s///%s///%s", conversationID, participantIDs, totalMessages));
     }
 
     public void writeToFile(String filename) {
@@ -119,4 +137,5 @@ public class Conversations implements ConversationsInterface {
             e.printStackTrace();
         }
     }
+
 } //End Class
