@@ -1,0 +1,39 @@
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+/**
+ * DirectMessagingDatabaseInterface.java
+ *
+ * Lists all the methods and their paramaters used by DirectMessagingDatabase.java
+ *
+ * @author ThomasRalton, L105
+ * @version April 7, 2024
+ */
+public interface DirectMessagingDatabaseInterface {
+    // Send a message to a conversation
+    void sendMessage(String conversationId, String senderId, String recipientId, String messageContent);
+
+    // Retrieve a conversation by ID
+    Conversations getConversation(String conversationId);
+
+    // Retrieve all conversations for a user
+    List<Conversations> getUserConversations(String userId);
+
+    // Archive a conversation
+    void archiveConversation(String conversationId);
+
+    // Delete a conversation
+    void deleteConversation(String conversationId);
+
+    // Write conversations and userConversations to a text file
+    void writeToFile(String filename) throws IOException;
+
+    // Read conversations and userConversations from a text file
+    void readFromFile(String filename) throws IOException;
+
+    // Getter for conversations map
+    Map<String, Conversations> getConversations();
+
+    // Getter for userConversations map
+    Map<String, List<String>> getUserConversationsMap();
+}
