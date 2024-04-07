@@ -1,5 +1,4 @@
 import java.io.IOException;
-import java.util.Date;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 /**
@@ -20,49 +19,52 @@ import java.io.FileWriter;
  * @version March 31, 2024
  *
  */
-public class Messaging implements MessagingInterface {
+public class Messaging {
 
     //Fields
     private String messageID; //Unique Message ID
-    public String senderID; //userID of sender
-    public String recipientID; //UserID of recipient
-    private Date timestamp; //TimeStamp passed in by database - format:MM-dd-yyyy HH:mm:ss  -- Military Time
+    private String senderID; //userID of sender
+    private String recipientID; //UserID of recipient
+    private String timeStamp; //TimeStamp passed in by database - format:MM-dd-yyyy HH:mm:ss  -- Military Time
     private String content; //Message Content
     private boolean isRead; //Status of message - if been read or not
+    private String conversationID;
+
 
     //Constructor - initialize values
     //MessageID Format: "senderID,recipientID,timestamp"
-    public Messaging(String messageID, String senderID, String recipientID, Date timestamp, String content) {
+    public Messaging(String messageID, String conversationID, String senderID, String recipientID, String timestamp, String content, boolean isRead) {
         this.messageID = messageID; //This will be created as a count for everytime a message is sent
         this.senderID = senderID;
         this.recipientID = recipientID;
-        this.timestamp = timestamp;
+        this.timeStamp = timestamp;
         this.content = content.replace(",",".--."); //Encrypt message by replacing all commas with dashes, that way
         // Split(",") doesn't prematurely split messages
         this.isRead = false;
+        this.conversationID = conversationID;
 
-        Messaging message = new Messaging(messageID, senderID, recipientID, timestamp,content);
-// Call other methods to set message details if needed
+        Messaging message = new Messaging(messageID, conversationID, senderID, recipientID, timestamp, content, isRead);
+        // Call other methods to set message details if needed
         message.writeToMessagesFile("messages.txt");
     }
 
     //Setters
-    public void setmessageID(String messageID) {
+    public void setMessageID(String messageID) {
         this.messageID = messageID;
     }
-    public void setsenderID(String senderID) {
+    public void setSenderID(String senderID) {
         this.senderID = senderID;
     }
-    public void setrecipientID(String recipientID) {
+    public void setRecipientID(String recipientID) {
         this.recipientID = recipientID;
     }
-    public void setimestamp(Date timestamp) {
-        this.timestamp = timestamp;
+    public void setTimestamp(String timestamp) {
+        this.timeStamp = timestamp;
     }
-    public void setcontent(String content) {
+    public void setContent(String content) {
         this.content = content;
     }
-    public void setread(boolean read) {
+    public void setRead(boolean read) {
         isRead = read;
     }
 
@@ -70,32 +72,35 @@ public class Messaging implements MessagingInterface {
     public String getMessageID() {
         return messageID;
     }
-    public String getsenderID() {
+    public String getConversationID() {
+        return (conversationID);
+    }
+    public String getSenderID() {
         return senderID;
     }
-    public String getrecipientID() {
+    public String getRecipientID() {
         return recipientID;
     }
-    public Date gettimestamp() {
-        return timestamp;
-    }
-    public String getcontent() {
-        //content.replace(".--.",","); //Un-Encrypt message by replacing all dashes with commas, that way
-        return content.replace(".--.",","); //Un-Encrypt message by replacing all dashes with commas, that way
-    }
-
-    public static String getconvertedContent(String string) { //Un-encrypt the given encrypted message string
-        //string.replace(".--.",","); //Un-Encrypt message by replacing all dashes with commas, that way
-        return string.replace(".--.",","); //Un-Encrypt message by replacing all dashes with commas, that way;
+    public String getTimestamp() {
+        return timeStamp;
     }
     public boolean isRead() {
         return isRead;
     }
+    public String getContent() {
+        //content.replace(".--.",","); //Un-Encrypt message by replacing all dashes with commas, that way
+        return content.replace(".--.",","); //Un-Encrypt message by replacing all dashes with commas, that way
+    }
+
+    public static String getConvertedContent(String string) { //Un-encrypt the given encrypted message string
+        //string.replace(".--.",","); //Un-Encrypt message by replacing all dashes with commas, that way
+        return string.replace(".--.",","); //Un-Encrypt message by replacing all dashes with commas, that way;
+    }
 
     //Prints given content in format ready for messaging.txt file
-    public String tostring() {
-        //Format: "messageID//senderID//recipientID//timestamp//isRead//content"
-        return (String.format(("%s//%s//%s//%s//%s//%s"), messageID, senderID, recipientID, timestamp,isRead,
+    public String toString() {
+        //Format: "messageID//conversationID//senderID//recipientID//timestamp//isRead//content"
+        return (String.format(("%s//%s//%s//%s//%s//%s//%s//%s"), messageID, conversationID, senderID, recipientID, timeStamp,isRead,
                 content.replace(".--.",",")));
 
     }
