@@ -71,5 +71,4 @@ public class DirectMessagingDatabaseTest {
         assertFalse("Conversation should be removed from user conversations", db.getUserConversationsMap().containsValue(conversationId));
     }
 
-    // You can implement the remaining test cases in a similar manner
 }
