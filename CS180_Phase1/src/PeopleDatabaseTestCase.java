@@ -1,94 +1,87 @@
-import org.junit.Test;
 import static org.junit.Assert.*;
-import org.junit.Before;
-import java.util.Date;
-/**
- * PeopleDatabaseTestCase.java
- *
- * This class contains test cases for the PeopleDatabase.java class
- * It includes tests that check the methods of the classes to ensure they work
- *
- * @author Juan Rodriguez, L105
- * @version April 1, 2024
- */
+import org.junit.Test;
+import java.util.*;
+
 public class PeopleDatabaseTestCase {
-    private PeopleDatabase database;
 
-    @Before
-    public void setUp() {
-        database = new PeopleDatabase();
+    @Test
+    public void addUser_Test() {
+        PeopleDatabase db = new PeopleDatabase("userProfileList.txt", "friendshipList.txt", "blockedUserList.txt");
+        UserProfile user = new UserProfile("testUser");
+        
+        db.addUser(user);
+        ArrayList<String> users = db.readFileToArray("userProfileList.txt");
+        assertTrue("User should be added", users.contains(user.getUserName()));
     }
 
     @Test
-    public void testAddUser() {
-        UserProfile user1 = new UserProfile("1", "user1", "John", "Doe", "password123", "1990-01-01", "male", "Reading", "Swimming", "Traveling", "Cooking", "New York", "USA", "University of XYZ");
-        database.addUser(user1);
-        assertTrue(database.getUsers().containsKey(user1.getUserID()));
-        assertEquals(user1, database.getUsers().get(user1.getUserID()));
+    public void removeUser_Test() {
+        PeopleDatabase db = new PeopleDatabase("userProfileList.txt", "friendshipList.txt", "blockedUserList.txt");
+        String userID = "testUser";
+
+        db.removeUser(userID);
+        ArrayList<String> users = db.readFileToArray("userProfileList.txt");
+        assertFalse("User should be removed", users.contains(userID));
     }
 
     @Test
-    public void testRemoveUser() {
-        UserProfile user1 = new UserProfile("1", "user1", "John", "Doe", "password123", "1990-01-01", "male", "Reading", "Swimming", "Traveling", "Cooking", "New York", "USA", "University of XYZ");
-        database.addUser(user1);
-        database.removeUser(user1.getUserID());
-        assertFalse(database.getUsers().containsKey(user1.getUserID()));
+    public void updateUserProfile_Test() {
+        PeopleDatabase db = new PeopleDatabase("userProfileList.txt", "friendshipList.txt", "blockedUserList.txt");
+        String userID = "testUser";
+        String toBeUpdated = "userName";
+        String updatedPart = "newUserName";
+
+        db.updateUserProfile(userID, toBeUpdated, updatedPart);
+        ArrayList<String> users = db.readFileToArray("userProfileList.txt");
+        assertTrue("User profile should be updated", users.contains(updatedPart));
     }
 
     @Test
-    public void testUpdateUserProfile() {
-        UserProfile user1 = new UserProfile("1", "user1", "John", "Doe", "password123", "1990-01-01", "male", "Reading", "Swimming", "Traveling", "Cooking", "New York", "USA", "University of XYZ");
-        database.addUser(user1);
+    public void blockUser_Test() {
+        PeopleDatabase db = new PeopleDatabase("userProfileList.txt", "friendshipList.txt", "blockedUserList.txt");
+        String blockerID = "user1";
+        String blockedID = "user2";
+        Date date = new Date();
 
-        UserProfile updatedProfile = new UserProfile("1", "updatedUser1", "Updated", "User", "updatedPassword", "1990-01-01", "male", "UpdatedReading", "UpdatedSwimming", "UpdatedTraveling", "UpdatedCooking", "New York", "USA", "Updated University");
-        database.updateUserProfile(user1.getUserID(), updatedProfile);
-
-        assertEquals("updatedUser1", database.getUsers().get(user1.getUserID()).getUsername());
-        assertEquals("Updated", database.getUsers().get(user1.getUserID()).getUserFirstname());
-        assertEquals("User", database.getUsers().get(user1.getUserID()).getUserLastname());
-        assertEquals("updatedPassword", database.getUsers().get(user1.getUserID()).getPassword());
+        db.blockUser(blockerID, blockedID, date);
+        ArrayList<String> blockedUsers = db.readFileToArray("blockedUserList.txt");
+        assertTrue("User should be blocked", blockedUsers.contains("BID_user1_user2_" + date.toString()));
     }
 
     @Test
-    public void testBlockUser() {
-        UserProfile user1 = new UserProfile("1", "user1", "John", "Doe", "password123", "1990-01-01", "male", "Reading", "Swimming", "Traveling", "Cooking", "New York", "USA", "University of XYZ");
-        UserProfile user2 = new UserProfile("2", "user2", "Jane", "Smith", "abc123", "1995-05-15", "female", "Painting", "Hiking", "Photography", "Dancing", "Los Angeles", "USA", "College of ABC");
-        database.addUser(user1);
-        database.addUser(user2);
-        database.blockUser(user1.getUserID(), user2.getUserID(), new Date());
-        assertTrue(database.getBlockedUsers().containsKey(user2.getUserID()));
+    public void unblockUser_Test() {
+        PeopleDatabase db = new PeopleDatabase("userProfileList.txt", "friendshipList.txt", "blockedUserList.txt");
+        String blockerID = "user1";
+        String blockedID = "user2";
+        Date date = new Date();
+
+        db.unblockUser(blockerID, blockedID, date);
+        ArrayList<String> blockedUsers = db.readFileToArray("blockedUserList.txt");
+        assertFalse("User should be unblocked", blockedUsers.contains("BID_user1_user2_" + date.toString()));
     }
 
     @Test
-    public void testUnblockUser() {
-        UserProfile user1 = new UserProfile("1", "user1", "John", "Doe", "password123", "1990-01-01", "male", "Reading", "Swimming", "Traveling", "Cooking", "New York", "USA", "University of XYZ");
-        UserProfile user2 = new UserProfile("2", "user2", "Jane", "Smith", "abc123", "1995-05-15", "female", "Painting", "Hiking", "Photography", "Dancing", "Los Angeles", "USA", "College of ABC");
-        database.addUser(user1);
-        database.addUser(user2);
-        database.blockUser(user1.getUserID(), user2.getUserID(), new Date());
-        database.unblockUser(user1.getUserID(), user2.getUserID(), new Date());
-        assertFalse(database.getBlockedUsers().containsKey(user2.getUserID()));
+    public void addFriend_Test() {
+        PeopleDatabase db = new PeopleDatabase("userProfileList.txt", "friendshipList.txt", "blockedUserList.txt");
+        String user1ID = "user1";
+        String user2ID = "user2";
+        Date date = new Date();
+
+        db.addFriend(user1ID, user2ID, date);
+        ArrayList<String> friendships = db.readFileToArray("friendshipList.txt");
+        assertTrue("Friendship should be added", friendships.contains("FID_user1_user2_Active_Active_" + date.toString()));
     }
 
     @Test
-    public void testRemoveFriend() {
-        UserProfile user1 = new UserProfile("1", "user1", "John", "Doe", "password123", "1990-01-01", "male", "Reading", "Swimming", "Traveling", "Cooking", "New York", "USA", "University of XYZ");
-        UserProfile user2 = new UserProfile("2", "user2", "Jane", "Smith", "abc123", "1995-05-15", "female", "Painting", "Hiking", "Photography", "Dancing", "Los Angeles", "USA", "College of ABC");
-        database.addUser(user1);
-        database.addUser(user2);
-        database.addFriend(user1.getUserID(), user2.getUserID(), new Date());
-        database.removeFriend(user1.getUserID(), user2.getUserID(), new Date());
-        assertFalse(database.getFriendships().containsKey(user1.getUserID() + "-" + user2.getUserID()));
+    public void removeFriend_Test() {
+        PeopleDatabase db = new PeopleDatabase("userProfileList.txt", "friendshipList.txt", "blockedUserList.txt");
+        String user1ID = "user1";
+        String user2ID = "user2";
+        Date date = new Date();
+
+        db.removeFriend(user1ID, user2ID, date);
+        ArrayList<String> friendships = db.readFileToArray("friendshipList.txt");
+        assertFalse("Friendship should be removed", friendships.contains("FID_user1_user2_Active_Active_" + date.toString()));
     }
 
-    @Test
-    public void testAddFriend() {
-        UserProfile user1 = new UserProfile("1", "user1", "John", "Doe", "password123", "1990-01-01", "male", "Reading", "Swimming", "Traveling", "Cooking", "New York", "USA", "University of XYZ");
-        UserProfile user2 = new UserProfile("2", "user2", "Jane", "Smith", "abc123", "1995-05-15", "female", "Painting", "Hiking", "Photography", "Dancing", "Los Angeles", "USA", "College of ABC");
-        database.addUser(user1);
-        database.addUser(user2);
-        database.addFriend(user1.getUserID(), user2.getUserID(), new Date());
-        assertTrue(database.getFriendships().containsKey(user1.getUserID() + "-" + user2.getUserID()));
-    }
 }
-
