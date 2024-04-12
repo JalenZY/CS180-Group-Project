@@ -32,51 +32,19 @@ public class BlockedList extends Object {
     String user1LastName;
     String user2FirstName;
     String user2LastName;
-    private static Date date; //TimeStamp passed in by database - format:MM-dd-yyyy HH:mm:ss  -- Military Time
+    private String date; //TimeStamp passed in by database - format:MM-dd-yyyy HH:mm:ss  -- Military Time
     //String date = "FIX THIS";  //date that friendship offer was made - resets to date that offer accepted or declined
 
-    //Find and set userIDs given usernames
-    public BlockedList(String username1, String username2, Date date) {
-        this.username1 = username1;
-        this.username2 = username2;
+    public BlockedList(String user1ID, String user2ID, String date) {
+        this.user1ID = user1ID;
+        this.user2ID = user2ID;
         this.date = date;
-        boolean foundUser1 = false;
-        boolean foundUser2 = false;
-
-        //Search through userprofile.txt to find two accounts
-        try {
-            //FileReader freader1 = new FileReader("userprofile.txt");
-            BufferedReader reader1 = new BufferedReader(new FileReader("userprofile.txt"));
-
-            String checkLine;
-            //Format:userID,username,userFirstname,userLastname,email,password,birthday,gender,
-            // hobby1,hobby2,hobby3,hobby4,
-            // homeLocation,usersRegion,collegeName;
-            while (((checkLine = reader1.readLine()) != null) && !foundUser1 && !foundUser2) {
-                //Run through file to find username1
-                String[] selectedLine = checkLine.split(","); //Splits line up by comma to search
-                if (selectedLine[1].equals(username1) && !foundUser1) {
-                    user1ID = selectedLine[0];
-                    foundUser1 = true;
-                } else if (selectedLine[1].equals(username2) && !foundUser2) {
-                    user2ID = selectedLine[0];
-                    foundUser2 = true;
-                }
-            }
-            //Create BlockedID
-            if (foundUser1 && foundUser2) {
-                blockedID = String.format("BID_%s_%s_%s", user1ID, user2ID, date); //Temporary BlockedID
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        blockedID = String.format("BID_%s_%s_%s", user1ID, user2ID, date); //Temporary BlockedID
     }
 
     //Sets userIDs given users Names
     public BlockedList(String user1FirstName, String user1LastName, String user2FirstName, String user2LastName,
-                       Date date) {
+                       String date) {
         this.user1FirstName = user1FirstName;
         this.user1LastName = user1LastName;
         this.user2FirstName = user2FirstName;
@@ -88,7 +56,7 @@ public class BlockedList extends Object {
         //Search through userprofile.txt to find two accounts
         try {
             //FileReader freader1 = new FileReader("userprofile.txt");
-            BufferedReader reader1 = new BufferedReader(new FileReader("userprofile.txt"));
+            BufferedReader reader1 = new BufferedReader(new FileReader("userProfileList.txt"));
 
             String checkLine;
             //Format:userID,username,userFirstname,userLastname,email,password,birthday,gender,hobby1,hobby2,hobby3,
@@ -120,18 +88,20 @@ public class BlockedList extends Object {
     //Checks to see if blockedID already in file (meaning friendship already exists), if true, then return error
     //message, else return blockedID for database to add to friendslist file.
 
+    //FIIIIIIIIIIIIIIIIIIIXXXXXXXXXXXXX!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    //Will need to sort through userProfile databse to get username or userID respectively
     //Return String array of Blocked usernames that A user has
     public ArrayList<String> blockedCompList(String username1) {
         ArrayList<String> blockedCompList = new ArrayList<>();
         try { //Check to see if friendship exists already
-            BufferedReader reader1 = new BufferedReader(new FileReader("blockedlist.txt")); //
+            BufferedReader reader1 = new BufferedReader(new FileReader("blockedUserList.txt")); //
 
-            String checkuser = username1; //finding all blocked contacts for this user
+            String checkUser = username1; //finding all blocked contacts for this user
             String checkLine;
-            //blockedlist format: BID_username1_username2_status
+            //blockedlist format: BID_userID1_userID2_date
             while ((checkLine = reader1.readLine()) != null) {
                 String[] selectedLine = checkLine.split("_");
-                if (selectedLine[1].equals(checkuser)) {
+                if (selectedLine[1].equals(checkUser)) {
                     blockedCompList.add(String.format(selectedLine[2])); //Adds username2 to BlockedCompList
                     //Should we include some type of formatting????????
                 }
@@ -170,10 +140,10 @@ public class BlockedList extends Object {
     public void setSince(String since) {
         this.since = since;
     }
-    public void setUsername1(String username1) {
+    public void setUserName1(String username1) {
         this.username1 = username1;
     }
-    public void setUsername2(String username2) {
+    public void setUserName2(String username2) {
         this.username2 = username2;
     }
     public void setUser1FirstName(String user1FirstName) {
@@ -188,7 +158,7 @@ public class BlockedList extends Object {
     public void setUser2LastName(String user2LastName) {
         this.user2LastName = user2LastName;
     }
-    public void setDate(Date date) {
+    public void setDate(String date) {
         this.date = date;
     }
 
@@ -208,10 +178,10 @@ public class BlockedList extends Object {
     public String getSince() {
         return since;
     }
-    public String getUsername1() {
+    public String getUserName1() {
         return username1;
     }
-    public String getUsername2() {
+    public String getUserName2() {
         return username2;
     }
     public String getUser1FirstName() {
@@ -226,8 +196,7 @@ public class BlockedList extends Object {
     public String getUser2LastName() {
         return user2LastName;
     }
-    public Date getDate() {
+    public String getDate() {
         return date;
     }
 } //End Class
-
