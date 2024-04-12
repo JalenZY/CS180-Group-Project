@@ -1,6 +1,5 @@
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.util.ArrayList;
 import java.util.Objects;
 /**
  * UserProfile.java
@@ -42,6 +41,45 @@ public class UserProfile extends Object {
 
     //Method to Write collected information to userprofile.txt file
     public UserProfile (String userID) {
+        try {
+            //Read through text file to collect information for userID
+            BufferedReader reader = new BufferedReader(new FileReader("UserProfileList.txt"));
+            ArrayList<String> lines = new ArrayList<>();
+            String line1;
+            boolean next = true;
+            while (((line1 = reader.readLine()) != null) && next) {
+                //Skip empty lines or lines with only whitespace characters
+                if (line1.contains(userID)) {
+                    if (!line1.trim().isEmpty()) {
+                        //Write line containing given userID to the arraylist
+                        lines.add(line1);
+                        next = false;
+                    }
+                }
+            }
+            //Parse through and separate arrayList into respective categories
+            if (!next) {
+                String[] parts = lines.get(0).split(","); //Get first line, should only be one line
+                this.userID = parts[0];
+                this.userName = parts[1];
+                this.userFirstName = parts[2];
+                this.userLastName = parts[3];
+                this.password = parts[4];
+                this.birthday = parts[5];
+                this.gender = parts[6];
+                this.hobby1 = parts[7];
+                this.hobby2 = parts[8];
+                this.hobby3 = parts[9];
+                this.hobby4 = parts[10];
+                this.homeLocation = parts[11];
+                this.usersRegion = parts[12];
+                this.collegeName = parts[13];
+            }
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
@@ -64,19 +102,19 @@ public class UserProfile extends Object {
         this.usersRegion = usersRegion1;
         this.collegeName = collegeName1;
 
-        try (BufferedWriter writer = new BufferedWriter(toString())) {
-            // Write user profile information to the file
-            writer.write(toString());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try (BufferedWriter writer = new BufferedWriter()) {
+//            // Write user profile information to the file
+//            writer.write(toString());
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
     }
 
     public String toString() { //Writes string in format for database
         //Format:username,userFirstname,userLastname,email,password,birthday,gender,hobby1,hobby2,hobby3,hobby4,
         // homeLocation,usersRegion,collegeName;
-        toString2 = String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s", userName, userFirstName, userLastName,
+        toString2 = String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,", userID, userName, userFirstName, userLastName,
                 password, birthday, gender, hobby1, hobby2, hobby3, hobby4, homeLocation, usersRegion, collegeName);
         return (toString2);
     }
