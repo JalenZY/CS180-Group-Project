@@ -1,0 +1,4 @@
+UserID3,user3,Michael,Johnson,test321,1988-12-20,male,Sports,Music,Gaming,Running,Chicago,USA,State University
+UserID5,username5,Alexander,Williams,pass789,1980-09-25,male,Cycling,Photography,Traveling,Painting,San Francisco,USA,Technical Institute
+UserID6,user6,Emily,Brown,test123,1992-03-10,female,Reading,Writing,Drawing,Traveling,Boston,USA,State College
+UserID1,newUserName,John,Doe,password123,1990-01-01,male,Reading,Swimming,Traveling,Cooking,New York,USA,University of XYZ,
