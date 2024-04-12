@@ -25,95 +25,50 @@ import java.util.Objects;
  */
 public class FriendsList extends Object {
     //Fields
-    String user1ID; //Primary Users ID
-    String user2ID; //Friends ID
-    String friendshipID; //Unique identifier given to each friendship
-    String status; //Status of Friendship: Accepted, Pending, Denied
-    String since; //Data friendship was initiated (starts with pending, resets when accepted)
-    String userName1;
-    String userName2;
-    String user1FirstName;
-    String user1LastName;
-    String user2FirstName;
-    String user2LastName;
-    String user1status; //Status of User1's acceptance of friendship - passed in by database
-    String user2status; //Status of User2's acceptance of friendship - passed in by database
-    private Date date; //TimeStamp passed in by database - format:MM-dd-yyyy HH:mm:ss  -- Military Time
+    private String user1ID; //Primary Users ID
+    private String user2ID; //Friends ID
+    private String friendshipID; //Unique identifier given to each friendship
+    private String status; //Status of Friendship: Accepted, Pending, Denied
+    private String since; //Data friendship was initiated (starts with pending, resets when accepted)
+    private String userName1;
+    private String userName2;
+    private String user1FirstName;
+    private String user1LastName;
+    private String user2FirstName;
+    private String user2LastName;
+    //private String user1status; //Status of User1's acceptance of friendship - passed in by database
+    //private String user2status; //Status of User2's acceptance of friendship - passed in by database
+    private String date; //TimeStamp passed in by database - format:MM-dd-yyyy HH:mm:ss  -- Military Time
     //String date = "FIX THIS";  //date that friendship offer was made - resets to date that offer accepted or declined
 
     //Find and set userIDs given usernames
-    public FriendsList(String username1, String username2, String user1status, String user2status, Date date) {
-        this.userName1 = username1;
-        this.userName2 = username2;
-        this.user1status = user1status;
-        this.user2status = user2status;
+    public FriendsList(String userID1, String userID2, String status, String date) {
+        this.user1ID = userID1;
+        this.user2ID = userID2;
+        this.status = status;
         this.date = date;
         boolean foundUser1 = false;
         boolean foundUser2 = false;
-
-        //Set Status (Active + Active = Active) (Active + Pending = Pending) (Active + Declined = Declined)
-        if (user1status.equals("Active") && user2status.equals("Active")) {
-            this.status = "Active";
-        } else if (user1status.equals("Pending") || user2status.equals("Pending")) {
-            this.status = "Pending";
-        } else if (user1status.equals("Declined") || user2status.equals("declined")) {
-            this.status = "Declined";
-        }
-
-        //Search through userprofile.txt to find two accounts
-        try {
-            //FileReader freader1 = new FileReader("userprofile.txt");
-            BufferedReader reader1 = new BufferedReader(new FileReader("userprofile.txt"));
-
-            String checkLine;
-            //Format:userID,username,userFirstname,userLastname,email,password,birthday,gender,hobby1,hobby2,hobby3,
-            // hobby4,homeLocation,usersRegion,collegeName;
-            //Run through file to find username1
-            while (((checkLine = reader1.readLine()) != null) && !foundUser1 && !foundUser2) {
-                String[] selectedLine = checkLine.split(","); //Splits line up by comma to search
-                if (selectedLine[1].equals(username1) && !foundUser1) {
-                    user1ID = selectedLine[0];
-                    foundUser1 = true;
-                } else if (selectedLine[1].equals(username2) && !foundUser2) {
-                    user2ID = selectedLine[0];
-                    foundUser2 = true;
-                }
-            }
-            //Create Friendship ID
-            if (foundUser1 && foundUser2) {
-                friendshipID = String.format("FID_%s_%s_%s_%s", user1ID, user2ID, status, date); //Temp. friendshipID
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        //Create Friendship ID
+        this.friendshipID = String.format("FID_%s_%s_%s_%s", user1ID, user2ID, status, date); //Temp. friendshipID
     }
 
     //Sets userIDs given users Names
     public FriendsList(String user1FirstName, String user1LastName, String user2FirstName, String user2LastName,
-                       String user1status, String user2status, Date date) {
+                       String status, String date) {
         this.user1FirstName = user1FirstName;
         this.user1LastName = user1LastName;
         this.user2FirstName = user2FirstName;
         this.user2LastName = user2LastName;
+        this.status = status;
         this.date = date;
         boolean foundUser1 = false;
         boolean foundUser2 = false;
 
-        //Set Status (Active + Active = Active) (Active + Pending = Pending) (Active + Declined = Declined)
-        if (user1status.equals("Active") && user2status.equals("Active")) {
-            this.status = "Active";
-        } else if (user1status.equals("Pending") || user2status.equals("Pending")) {
-            this.status = "Pending";
-        } else if (user1status.equals("Declined") || user2status.equals("declined")) {
-            this.status = "Declined";
-        }
-
         //Search through userprofile.txt to find two accounts
         try {
             //FileReader freader1 = new FileReader("userprofile.txt");
-            BufferedReader reader1 = new BufferedReader(new FileReader("userprofile.txt"));
+            BufferedReader reader1 = new BufferedReader(new FileReader("userProfileList.txt"));
 
             String checkLine;
             //Format:userID,username,userFirstname,userLastname,email,password,birthday,gender,hobby1,hobby2,hobby3,
@@ -145,14 +100,14 @@ public class FriendsList extends Object {
     public ArrayList<String> friendsCompList(String username1) {
         ArrayList<String> friendCompList = new ArrayList<>();
         try { //Check to see if friendship exists already
-            BufferedReader reader1 = new BufferedReader(new FileReader("friendslist.txt")); //
+            BufferedReader reader1 = new BufferedReader(new FileReader("friendsList.txt")); //
 
-            String checkuser = username1;
+            String checkUser = username1;
             String checkLine;
             //Friendshiplist format: FID_username1_username2_status
             while ((checkLine = reader1.readLine()) != null) {
                 String[] selectedLine = checkLine.split("_");
-                if (selectedLine[1].equals(checkuser)) {
+                if (selectedLine[1].equals(checkUser)) {
                     friendCompList.add(selectedLine[2]); //Adds username2 to friendsCompList
                     //Should we include some type of formatting????????
                 }
@@ -209,13 +164,7 @@ public class FriendsList extends Object {
     public void setUser2LastName(String user2LastName) {
         this.user2LastName = user2LastName;
     }
-    public void setUser1status(String user1status) {
-        this.user1status = user1status;
-    }
-    public void setUser2status(String user2status) {
-        this.user2status = user2status;
-    }
-    public void setDate(Date date) {
+    public void setDate(String date) {
         this.date = date;
     }
 
@@ -253,13 +202,7 @@ public class FriendsList extends Object {
     public String getUser2LastName() {
         return user2LastName;
     }
-    public String getUser1Status() {
-        return user1status;
-    }
-    public String getUser2Status() {
-        return user2status;
-    }
-    public Date getDate() {
+    public String getDate() {
         return date;
     }
 } //End Class
