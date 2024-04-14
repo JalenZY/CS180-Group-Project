@@ -1,6 +1,5 @@
 import java.io.*;
 import java.util.*;
-import java.text.SimpleDateFormat;
 /**
  * DirectMessagingDatabase.java
  *
@@ -16,40 +15,47 @@ public class DirectMessagingDatabase {
     private final Map<String, List<String>> userConversations = new HashMap<>();
 
     //Send a message to a conversation; create the conversation if it does not exist
-    public void sendMessage(String conversationId, String senderId, String recipientId, String messageContent) {
+    public boolean sendMessage(String conversationID, String senderID, String recipientID, String date, String messageContent) {
         //Validate input parameters
-        if (conversationId == null || conversationId.isEmpty() || senderId == null || senderId.isEmpty() ||
-                recipientId == null || recipientId.isEmpty() || messageContent == null || messageContent.isEmpty()) {
+        //Conversation ID is created and passed in by server when a new conversation platform is opened for the 1st time
+        if (conversationID == null || conversationID.isEmpty() || senderID == null || senderID.isEmpty() ||
+                recipientID == null || recipientID.isEmpty() || messageContent == null || messageContent.isEmpty()) {
             throw new IllegalArgumentException("Invalid input parameters");
         }
 
         //Retrieve or create conversation based on conversation ID
-        Conversations conversation = conversations.computeIfAbsent(conversationId, k ->
-                //new Conversations(conversationId, new ArrayList<>()));
-                new Conversations(generateUniqueConversationId(), new ArrayList<>()));
+        Conversations conversation = conversations.computeIfAbsent(conversationID, k ->
+               (new Conversations(conversationID, senderID, recipientID)));
 
         //Generate unique message ID
-        String messageId =  generateUniqueMessageId(); //Generate a unique message ID
+        String messageId = generateUniqueMessageId(); //Generate a unique message ID
 
-        //Format current date
-        String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+        //Synchronize object for future-proof thread safety
+        synchronized (conversation) {
+            //Create and format new message object
+            Messaging message = new Messaging(messageId, conversationID, senderID, recipientID, date, messageContent);
+            conversation.addMessage(message); //Add new message to database text file
+        }
 
-        //Create new Messaging object with message details
-        Messaging message = new Messaging(messageId, conversationId, senderId, recipientId, date, messageContent, false);
+        //Update user conversations - update both user1 and user2
+        updateUserConversations(senderID, conversationID);
+        updateUserConversations(recipientID,conversationID);
 
-        //Add message to the conversation
-        conversation.addMessage(message);
-
-        //Update user conversations
-        updateUserConversations(senderId, conversationId);
+        //Write the conversation Object Key relation to a text file along with userConversation to another file
+        return (writeToFile());
     }
 
-    //Retrieve a conversation by ID
-    public Conversations getConversation(String conversationId) {
-        return conversations.get(conversationId);
+    //Retrieve a conversation messages by ID
+    public ArrayList<String> getConversation(String conversationID) {
+        Conversations conv = conversations.get(conversationID);
+        if (conv != null) {
+            return conv.getMessages();
+        } else {
+            return new ArrayList<>(); // Return an empty list if conversationID is not found
+        }
     }
 
-    //Retrieve all conversations for a user
+    //Retrieve all conversations for a user - conversations as in object
     public List<Conversations> getUserConversations(String userId) {
         List<String> conversationIds = userConversations.getOrDefault(userId, new ArrayList<>());
         List<Conversations> userConvs = new ArrayList<>();
@@ -63,36 +69,77 @@ public class DirectMessagingDatabase {
         return userConvs;
     }
 
-    //Archive a conversation
-    public void archiveConversation(String conversationId) {
-        Conversations conversation = conversations.get(conversationId);
-        if (conversation != null) {
-            conversation.archive();
+    //Delete a conversation - conversation object and all respective messages in process
+    public boolean deleteConversation(String conversationId) {
+        //Check if the conversation ID exists
+        if (!conversations.containsKey(conversationId)) {
+            return false;
+        }
+
+        //Remove conversation from conversations map
+        conversations.remove(conversationId);
+
+        //Remove conversation ID from all user conversations lists using Iterator for safe removal
+        for (List<String> userList : userConversations.values()) {
+            Iterator<String> iterator = userList.iterator();
+            while (iterator.hasNext()) {
+                if (iterator.next().equals(conversationId)) {
+                    iterator.remove(); // Safe removal using Iterator
+                }
+            }
+        }
+
+        // Remove lines containing conversation ID from the file
+        return (removeConversationIDMessages(conversationId));
+    }
+
+    //Helper method to remove conversation messages from arrays
+    private boolean removeConversationIDMessages(String conversationId) {
+        String filePath = "conversations.txt";
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath));
+             BufferedWriter writer = new BufferedWriter(new FileWriter(filePath + ".tmp"))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (!line.contains(conversationId)) {
+                    writer.write(line);
+                    writer.newLine();
+                }
+            }
+        } catch (IOException e) {
+            //e.printStackTrace(); // Handle or log the exception as needed
+            return false;
+        }
+
+        // Rename the temporary file to the original file
+        File file = new File(filePath);
+        File tempFile = new File(filePath + ".tmp");
+        if (tempFile.renameTo(file)) {
+            return true;
+        } else {
+            return false;
         }
     }
 
-    //Delete a conversation
-    public void deleteConversation(String conversationId) {
-        //Remove conversation from conversations map
-        conversations.remove(conversationId);
-        //Remove conversation ID from all user conversations lists
-        //Create a copy to avoid ConcurrentModificationException
-        List<String> conversationIdsCopy = new ArrayList<>(userConversations.keySet());
-        for (List<String> list : userConversations.values()) {
-            list.remove(conversationId);
-        }
-    }
 
     //Helper method to update user conversations list
     private void updateUserConversations(String userId, String conversationId) {
+        if (userConversations.containsKey(userId) && userConversations.get(userId).contains(conversationId)) {
+            //Conversation ID already exists for the user, no need to write it again
+            return;
+        }
         //Add conversation ID to the list of user conversations
         userConversations.computeIfAbsent(userId, k -> new ArrayList<>()).add(conversationId);
     }
 
     //Additional getters for class properties
-    public Map<String, Conversations> getConversations() {
+    public Map<String, Conversations> getConversationMap() {
         //Return a copy of the conversations map to prevent modification outside the class
         return new HashMap<>(conversations);
+    }
+
+    public Conversations getConversationObj(String conversationID) {
+        //Return
+        return (conversations.get(conversationID));
     }
 
     public Map<String, List<String>> getUserConversationsMap() {
@@ -100,78 +147,100 @@ public class DirectMessagingDatabase {
         return new HashMap<>(userConversations);
     }
 
-    // Generate a unique conversation ID
+    //Helper Method, Generate a unique Message ID
     private String generateUniqueMessageId() {
         String messageID;
-        // Generate until a unique ID is found
+        boolean unique = true;
+        //Generate until a unique ID is found - checks against all other message ID
         do {
             messageID = UUID.randomUUID().toString();
-        } while (conversations.containsKey(messageID));
+            try  {
+                BufferedReader reader = new BufferedReader(new FileReader("conversations.txt"));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    String[] parts = line.split("///");
+                    String messageData = parts[3];
+                    String[] messageParts = messageData.split("//");
+
+                    if (parts.length > 1 && messageParts[1].equals(messageID)) { //Check against all other message IDs
+                        //Found a matching message ID
+                        unique = false; //Not unique
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace(); //Handle or log the exception as needed
+            }
+        } while (!unique);
         return messageID;
     }
 
-    // Generate a unique conversation ID
-    private String generateUniqueConversationId() {
-        String conversationId;
-        // Generate until a unique ID is found
-        do {
-            conversationId = UUID.randomUUID().toString();
-        } while (conversations.containsKey(conversationId));
-        return conversationId;
+    //Generate a unique conversation ID
+    private String generateUniqueConversationID(String senderID, String recipientID) {
+        //ConversationID Format: "senderIDRecipientID"
+        String conversationID = String.format("%s%s", senderID, recipientID);
+        return conversationID;
     }
 
     // Write conversations and userConversations to a text file
-    public void writeToFile(String filename) {
-        try (PrintWriter writer = new PrintWriter(new FileWriter("directmessagingdatabase.txt"))) {
+    public boolean writeToFile() {
+        try (PrintWriter writer = new PrintWriter(new FileWriter("conversations.txt"))) {
             for (Map.Entry<String, Conversations> entry : conversations.entrySet()) {
                 String conversationID = entry.getKey();
                 Conversations conv = entry.getValue();
-                List<String> participantIDs = new ArrayList<>(conv.getParticipantIDs());
+                String senderID = conv.getSenderID();
+                String recipientID = conv.getRecipientID();
                 List<String> messaging = conv.getMessages();
                 StringBuilder totalMessages = new StringBuilder();
                 for (String message : messaging) {
                     totalMessages.append(",").append(message);
                 }
-                writer.println(String.format("%s///%s///%s", conversationID, participantIDs, totalMessages.substring(1)));
+                //Format: conversationID1///senderID1///recipientID1///message1,message2,message3
+                writer.println(String.format("%s///%s///%s///%s", conversationID, senderID, recipientID,
+                        totalMessages.substring(1)));
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            return false;
         }
+        return true;
     }
 
     // Read conversations and userConversations from a text file
-    public void readFromFile(String filename) {
-        try (BufferedReader reader = new BufferedReader(new FileReader("directmessagingdatabase.txt"))) {
+    //Writes to a Map
+    public boolean readFromFile() {
+        try (BufferedReader reader = new BufferedReader(new FileReader("conversations.txt"))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split("///");
-                if (parts.length == 3) {
+                if (parts.length == 4) {
                     String conversationID = parts[0];
-                    List<String> participantIDs = Arrays.asList(parts[1].split(", "));
-                    Conversations conv = new Conversations(conversationID, participantIDs);
-                    String[] messagesData = parts[2].split(",");
+                    String senderID = parts[1];
+                    String recipientID = parts[2];
+                    Conversations conv = new Conversations(conversationID, senderID, recipientID);
+                    String[] messagesData = parts[3].split(",");
+                    //Format: "conversationID//messageID//senderID//recipientID//date//content"
                     for (String messageData : messagesData) {
                         String[] messageParts = messageData.split("//");
-                        if (messageParts.length == 7) { // Check if the correct number of parts
-                            String messageID = messageParts[0];
-                            String senderID = messageParts[1];
-                            String recipientID = messageParts[2];
-                            String timestamp = messageParts[3];
-                            boolean isRead = Boolean.parseBoolean(messageParts[4]);
+                        if (messageParts.length == 6) { // Check if the correct number of parts
+                            conversationID = messageParts[0];
+                            String messageID = messageParts[1];
+                            senderID = messageParts[2];
+                            recipientID = messageParts[3];
+                            String date = messageParts[4];
                             String content = messageParts[5];
                             // Create Messaging object with parsed data
                             Messaging message = new Messaging(messageID, conversationID, senderID, recipientID,
-                                    timestamp, content, isRead);
+                                    date, content);
                             conv.addMessage(message);
                         }
                     }
-                    //Add the conversation to the database
+                    //Add the conversation to the Map database
                     conversations.put(conversationID, conv);
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            return false;
         }
+        return true;
     }
 
 } //End Class
