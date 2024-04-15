@@ -6,7 +6,7 @@ import java.util.*;
  * The Operating Database that contains and connects all user interactions......
  *
  * @author Zhengyi Jiang/Thomas Ralston, L105
- * @version April 1, 2024
+ * @version April 15, 2024
  */
 public class PeopleDatabase {
     private ArrayList<String> users; // Key: userID, Value: UserProfile
