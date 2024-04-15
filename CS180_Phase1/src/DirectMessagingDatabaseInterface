@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 /**
@@ -7,33 +8,29 @@ import java.util.Map;
  * Lists all the methods and their paramaters used by DirectMessagingDatabase.java
  *
  * @author ThomasRalton, L105
- * @version April 7, 2024
+ * @version April 15, 2024
  */
 public interface DirectMessagingDatabaseInterface {
-    // Send a message to a conversation
-    void sendMessage(String conversationId, String senderId, String recipientId, String messageContent);
+    // Method to send a message to a conversation
+    boolean sendMessage(String conversationID, String senderID, String recipientID, String date, String messageContent);
 
-    // Retrieve a conversation by ID
-    Conversations getConversation(String conversationId);
+    // Method to retrieve a conversation's messages by ID
+    ArrayList<String> getConversation(String conversationID);
 
-    // Retrieve all conversations for a user
+    // Method to retrieve all conversations for a user
     List<Conversations> getUserConversations(String userId);
 
-    // Archive a conversation
-    void archiveConversation(String conversationId);
+    // Method to delete a conversation
+    boolean deleteConversation(String conversationId);
 
-    // Delete a conversation
-    void deleteConversation(String conversationId);
-
-    // Write conversations and userConversations to a text file
-    void writeToFile(String filename) throws IOException;
-
-    // Read conversations and userConversations from a text file
-    void readFromFile(String filename) throws IOException;
-
-    // Getter for conversations map
-    Map<String, Conversations> getConversations();
-
-    // Getter for userConversations map
+    // Getter methods for class properties
+    Map<String, Conversations> getConversationMap();
+    Conversations getConversationObj(String conversationID);
     Map<String, List<String>> getUserConversationsMap();
+
+    // Method to write conversations to a file
+    boolean writeToFile();
+
+    // Method to read conversations from a file
+    boolean readFromFile();
 }
