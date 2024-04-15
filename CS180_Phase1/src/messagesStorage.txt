@@ -1,0 +1,8 @@
+conv1//msg1//user1//user2//2024-04-14 12:10:00//Hello, how are you?
+conv1//msg2//user2//user1//2024-04-15 12:10:00//I'm fine, thank you!
+conv2//msg3//user1//user3//2024-04-16 12:10:00//Hey there!
+conv2//msg4//user3//user1//2024-04-17 12:10:00//Hi! What's up?
+conv3//msg5//user4//user3//2024-04-16 12:10:00//Hey there!
+conv3//msg6//user3//user4//2024-04-17 12:10:00//Hi! What's up?
+conv4//msg7//user3//user2//2024-04-14 12:10:00//Hello, how are you?
+conv4//msg8//user2//user3//2024-04-15 12:10:00//I'm fine, thank you!
