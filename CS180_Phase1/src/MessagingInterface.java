@@ -1,35 +1,22 @@
-import java.io.IOException;
-import java.util.Date;
-/**
- * MessagingInterface.java
- *
- * Lists all the methods and their paramaters used by Messaging.java
- *
- * @author ThomasRalton, L105
- * @version April 1, 2024
- */
-public interface MessagingInterface {
-    // Method to write the message to the messages file
-    void writeToMessagesFile(String filename) throws IOException;
+    // Setters
+    void setMessageID(String messageID);
+    void setSenderID(String senderID);
+    void setRecipientID(String recipientID);
+    void setDate(String date);
+    void setContent(String content);
+    void setRead(boolean read);
 
-    // Getter for the message ID
+    // Getters
     String getMessageID();
-
-    // Getter for the conversation ID
     String getConversationID();
-
-    // Getter for the sender ID
     String getSenderID();
-
-    // Getter for the recipient ID
     String getRecipientID();
-
-    // Getter for the timestamp
-    String getTimestamp();
-
-    // Getter for the read status
+    String getDate();
     boolean isRead();
-
-    // Getter for the message content
     String getContent();
-}
+
+    // Method to un-encrypt the given encrypted message string
+    static String getConvertedContent(String string);
+
+    // Method to format content for writing to messaging.txt file
+    String toString();
