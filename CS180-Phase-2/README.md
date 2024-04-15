@@ -27,19 +27,10 @@ With these changes the test case should properly run and show all passes. Howeve
 
  - DirectMessagingDatabase.java
    This is the main method that handles all the calling of supporting classes and the writing to the two supporting text files. The supporting classes are: "Messaging.java" and "Conversations.java", along with the supporting text files: "conversations.txt" and "messagesSupport.txt". The Messaging class handles the proper formatting and manipulation of information that is directly related to an individual message. This formatting is stored in the messagesSupports text file, this text file stores all the messages sent by all users and is key to the proper organization and formation of the conversations created in the conversations class. The conversations class chains together all the messages sent between two users and ties them under a single conversationID, this allows for quick ease of access to a users conversations history. This information is stored in the conversations.txt text file and is key to the functioning of the database. The database calls on internal and external methods to properly handle the given inputs from the the user passed down through the client server classes. 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
+
+
+ - MyClient / MyServer
+   These two classes work by the client acting as a structure for phase 3's GUI to directly interact with, to send requests and display outputs. The GUI will interact with the client, enacting a certain method that will then prompt the user to input required information, which is then passed to the server class which takes that information and uses it to call on the appropriate database methods, and then pass the method outputs back to the client. The information that the client prompts from the user is the parameters for a method in the database. Most calculations and data organization is handled in the database, while the server handles most of the logic, and the client simply gathers the required information.
  
  - BlockedList.java
   This class provides all the methods necessary for the database to create, add, remove, edit, and compare users to the Blocked List - This class also writes and removes information to the blockedlist.txt
