@@ -9,8 +9,8 @@ import java.util.*;
  * This class contains testcases for the PeopleDatabase.java class
  * It includes tests that check the methods of the classes to ensure they work
  *
- * @author Juan Rodriguez, L105
- * @version April 1, 2024
+ * @author Juan Rodriguez/Thomas Ralston, L105
+ * @version April 15, 2024
  */
 public class PeopleDatabaseTestCase {
 
