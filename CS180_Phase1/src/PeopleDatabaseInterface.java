@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Date;
 /**
  * PeopleDatabaseInterface.java
@@ -5,28 +6,40 @@ import java.util.Date;
  * Lists all the methods and their paramaters used by PeopleDatabase.java
  *
  * @author ThomasRalton - Borris, L105
- * @version April 1, 2024
+ * @version April 15, 2024
  */
 public interface PeopleDatabaseInterface {
 
-    // Add a new user to the database
-    void addUser(UserProfile user);
+    // Helper method to read text files into an ArrayList
+    ArrayList<String> readFileToArray(String filename);
 
-    // Remove a user from the database
-    void removeUser(String userID);
+    // Method to write changes to a text file
+    void writeChangesToFile(String filename, ArrayList<String> updatedInfo);
 
-    // Update a user's profile
-    void updateUserProfile(String userID, UserProfile updatedProfile);
+    // Method to add a new user to the database
+    boolean addUser(UserProfile user);
 
-    // Block a user
-    void blockUser(String blockerID, String blockedID, Date date);
+    // Method to remove a user from the database
+    boolean removeUser(String userID);
 
-    // Unblock a user
-    void unblockUser(String blockerID, String blockedID, Date date);
+    // Method to update a user's profile
+    boolean updateUserProfile(String userID, String toBeUpdated, String updatedPart);
 
-    // Add a friend
-    void addFriend(String user1ID, String user2ID, Date date);
+    // Method to block a user
+    boolean blockUser(String blockerID, String blockedID, String date);
 
-    // Remove a friend
-    void removeFriend(String user1ID, String user2ID, Date date);
+    // Method to unblock a user
+    boolean unblockUser(String blockerID, String blockedID, String date);
+
+    // Method to add a friend
+    boolean addFriend(String user1ID, String user2ID, String date);
+
+    // Method to accept a friend request
+    boolean acceptFriend(String user1ID, String user2ID, String date);
+
+    // Method to deny a friend request
+    boolean deniedFriend(String user1ID, String user2ID, String date);
+
+    // Method to remove a friend
+    boolean removeFriend(String user1ID, String user2ID, String date);
 }
