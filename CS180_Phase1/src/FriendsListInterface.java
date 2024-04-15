@@ -6,45 +6,41 @@ import java.util.Date;
  * Lists all the methods and their paramaters used by FriendsList.java
  *
  * @author ThomasRalton, L105
- * @version April 1, 2024
+ * @version April 15, 2024
  */
 public interface FriendsListInterface {
 
-    // Method to return a list of friend's usernames for a given user
-    public ArrayList<String> friendsCompList(String username1);
+    // Method to return a list of friend's usernames that a user has
+    ArrayList<String> friendsCompList(String username1);
 
-    // Method to check if given Friendship "o" is equal to classes friendship
-    public boolean equals(Object o);
+    // Method to check if a given Friendship object is equal to the class's friendship
+    boolean equals(Object o);
 
     // Setters
-    public void setUser1ID(String user1ID);
-    public void setUser2ID(String user2ID);
-    public void setFriendshipID(String friendshipID);
-    public void setStatus(String status);
-    public void setSince(String since);
-    public void setUsername1(String username1);
-    public void setUsername2(String username2);
-    public void setUser1FirstName(String user1FirstName);
-    public void setUser1LastName(String user1LastName);
-    public void setUser2FirstName(String user2FirstName);
-    public void setUser2LastName(String user2LastName);
-    public void setUser1status(String user1status);
-    public void setUser2status(String user2status);
-    public void setDate(Date date);
+    void setUser1ID(String user1ID);
+    void setUser2ID(String user2ID);
+    void setFriendshipID(String friendshipID);
+    void setStatus(String status);
+    void setSince(String since);
+    void setUsername1(String username1);
+    void setUsername2(String username2);
+    void setUser1FirstName(String user1FirstName);
+    void setUser1LastName(String user1LastName);
+    void setUser2FirstName(String user2FirstName);
+    void setUser2LastName(String user2LastName);
+    void setDate(String date);
 
     // Getters
-    public String getUser1ID();
-    public String getUser2ID();
-    public String getFriendshipID();
-    public String getStatus();
-    public String getSince();
-    public String getUserName1();
-    public String getUsername2();
-    public String getUser1FirstName();
-    public String getUser1LastName();
-    public String getUser2FirstName();
-    public String getUser2LastName();
-    public String getUser1Status();
-    public String getUser2Status();
-    public Date getDate();
+    String getUser1ID();
+    String getUser2ID();
+    String getFriendshipID();
+    String getStatus();
+    String getSince();
+    String getUserName1();
+    String getUsername2();
+    String getUser1FirstName();
+    String getUser1LastName();
+    String getUser2FirstName();
+    String getUser2LastName();
+    String getDate();
 }
