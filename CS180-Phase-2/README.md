@@ -26,7 +26,7 @@ With these changes the test case should properly run and show all passes. Howeve
 
 
  - DirectMessagingDatabase.java
-   This is the main method that handles all the calling of supporting classes and the writing to the two supporting text files. The supporting classes are: "Messaging.java" and "Conversations.java", along with the supporting text files: "conversations.txt" and "messagesSupport.txt". The Messaging class handles the proper formatting and manipulation of information that is directly related to an individual message. This formatting is stored in the 
+   This is the main method that handles all the calling of supporting classes and the writing to the two supporting text files. The supporting classes are: "Messaging.java" and "Conversations.java", along with the supporting text files: "conversations.txt" and "messagesSupport.txt". The Messaging class handles the proper formatting and manipulation of information that is directly related to an individual message. This formatting is stored in the messagesSupports text file, this text file stores all the messages sent by all users and is key to the proper organization and formation of the conversations created in the conversations class. The conversations class chains together all the messages sent between two users and ties them under a single conversationID, this allows for quick ease of access to a users conversations history. This information is stored in the conversations.txt text file and is key to the functioning of the database. The database calls on internal and external methods to properly handle the given inputs from the the user passed down through the client server classes. 
  
  
  
