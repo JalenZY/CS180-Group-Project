@@ -200,3 +200,51 @@ public class BlockedList extends Object {
         return date;
     }
 } //End Class
+
+//Find and set userIDs given usernames
+//    public BlockedList(String username1, String username2, Date date) {
+//        this.username1 = username1;
+//        this.username2 = username2;
+//        this.date = date;
+//        boolean foundUser1 = false;
+//        boolean foundUser2 = false;
+//
+//        //Search through userprofile.txt to find two accounts
+//        try {
+//            //FileReader freader1 = new FileReader("userprofile.txt");
+//            BufferedReader reader1 = new BufferedReader(new FileReader("userProfileList.txt"));
+//
+//            String checkLine;
+//            //Format:userID,username,userFirstname,userLastname,email,password,birthday,gender,
+//            // hobby1,hobby2,hobby3,hobby4,
+//            // homeLocation,usersRegion,collegeName;
+//            while (((checkLine = reader1.readLine()) != null) && !foundUser1 && !foundUser2) {
+//                //Run through file to find username1
+//                String[] selectedLine = checkLine.split(","); //Splits line up by comma to search
+//                if (selectedLine[1].equals(username1) && !foundUser1) {
+//                    user1ID = selectedLine[0];
+//                    foundUser1 = true;
+//                } else if (selectedLine[1].equals(username2) && !foundUser2) {
+//                    user2ID = selectedLine[0];
+//                    foundUser2 = true;
+//                }
+//            }
+//            //Create BlockedID
+//            if (foundUser1 && foundUser2) {
+//                blockedID = String.format("BID_%s_%s_%s", user1ID, user2ID, date); //Temporary BlockedID
+//            }
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
+
+
+//    public String toString() {
+//        return (String.format("BID_%s_%s_%s", user1ID,user2ID, date));
+//    }
+//
+//    public String toString(String user1ID, String user2ID, String date) {
+//        return (String.format("BID_%s_%s_%s", user1ID,user2ID, date));
+//    }
