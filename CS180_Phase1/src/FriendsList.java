@@ -20,7 +20,7 @@ import java.util.Objects;
  *
  * @author Thomas Ralston, L105
  *
- * @version March 31, 2024
+ * @version April 15, 2024
  *
  */
 public class FriendsList extends Object {
