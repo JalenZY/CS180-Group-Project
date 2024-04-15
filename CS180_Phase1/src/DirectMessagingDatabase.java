@@ -5,8 +5,8 @@ import java.util.*;
  *
  * The database for direct messagings
  *
- * @author Zhengyi Jiang, L105
- * @version April 1, 2024
+ * @author Zhengyi Jiang/Thomas Ralston, L105
+ * @version April 15, 2024
  */
 public class DirectMessagingDatabase {
     //Map to store conversations with conversation ID as key and Conversations object as value
@@ -20,10 +20,12 @@ public class DirectMessagingDatabase {
         //Conversation ID is created and passed in by server when a new conversation platform is opened for the 1st time
         if (conversationID == null || conversationID.isEmpty() || senderID == null || senderID.isEmpty() ||
                 recipientID == null || recipientID.isEmpty() || messageContent == null || messageContent.isEmpty()) {
-            throw new IllegalArgumentException("Invalid input parameters");
+            return false;
         }
 
         //Retrieve or create conversation based on conversation ID
+        //if there is no Conversations object associated with that conversation ID),
+        //then this method computes a new value
         Conversations conversation = conversations.computeIfAbsent(conversationID, k ->
                (new Conversations(conversationID, senderID, recipientID)));
 
@@ -34,7 +36,8 @@ public class DirectMessagingDatabase {
         synchronized (conversation) {
             //Create and format new message object
             Messaging message = new Messaging(messageId, conversationID, senderID, recipientID, date, messageContent);
-            conversation.addMessage(message); //Add new message to database text file
+            //Add new message to database text file
+            conversation.addMessage(message);
         }
 
         //Update user conversations - update both user1 and user2
@@ -148,31 +151,75 @@ public class DirectMessagingDatabase {
     }
 
     //Helper Method, Generate a unique Message ID
+//    private String generateUniqueMessageId() {
+//        String messageID;
+//        boolean unique = true;
+//        //Generate until a unique ID is found - checks against all other message ID
+//        do {
+//            messageID = UUID.randomUUID().toString();
+//            try  {
+//                BufferedReader reader = new BufferedReader(new FileReader("conversations.txt"));
+//                String line;
+//                while ((line = reader.readLine()) != null) {
+//                    String[] parts = line.split("///");
+//                    String messageData = parts[3];
+//                    String[] messageParts = messageData.split("//");
+//
+//                    if (parts.length > 1 && messageParts[1].equals(messageID)) { //Check against all other message IDs
+//                        //Found a matching message ID
+//                        unique = false; //Not unique
+//                    }
+//                }
+//            } catch (IOException e) {
+//                e.printStackTrace(); //Handle or log the exception as needed
+//            }
+//        } while (!unique);
+//        return messageID;
+//    }
+    //Helper Method, Generate a unique Message ID
     private String generateUniqueMessageId() {
         String messageID;
         boolean unique = true;
-        //Generate until a unique ID is found - checks against all other message ID
+        Random random = new Random();
+        // Generate until a unique ID is found
         do {
-            messageID = UUID.randomUUID().toString();
-            try  {
+            // Generate a random string of 4-6 characters
+            int length = random.nextInt(3) + 4; // Random length between 4 and 6
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < length; i++) {
+                char randomChar = (char) (random.nextInt(26) + 'a'); // Random lowercase letter
+                sb.append(randomChar);
+            }
+            messageID = sb.toString();
+            // Check if the generated ID already exists
+            try {
                 BufferedReader reader = new BufferedReader(new FileReader("conversations.txt"));
                 String line;
+                boolean idExists = false;
                 while ((line = reader.readLine()) != null) {
                     String[] parts = line.split("///");
-                    String messageData = parts[3];
-                    String[] messageParts = messageData.split("//");
-
-                    if (parts.length > 1 && messageParts[1].equals(messageID)) { //Check against all other message IDs
-                        //Found a matching message ID
-                        unique = false; //Not unique
+                    if (parts.length > 1) {
+                        String messageData = parts[3];
+                        String[] messageParts = messageData.split("//");
+                        if (messageParts.length > 1 && messageParts[1].equals(messageID)) {
+                            // Found a matching message ID
+                            idExists = true;
+                            break;
+                        }
                     }
                 }
+                reader.close();
+                if (!idExists) {
+                    unique = true; // Unique ID found, exit loop
+                }
             } catch (IOException e) {
-                e.printStackTrace(); //Handle or log the exception as needed
+                e.printStackTrace(); // Handle or log the exception as needed
+                unique = false; // Error occurred, retry generating the ID
             }
         } while (!unique);
         return messageID;
     }
+
 
     //Generate a unique conversation ID
     private String generateUniqueConversationID(String senderID, String recipientID) {
@@ -181,23 +228,29 @@ public class DirectMessagingDatabase {
         return conversationID;
     }
 
-    // Write conversations and userConversations to a text file
+    // Write conversations text File -- Format: conversationID1///senderID1///recipientID1///message1,message2,message3
+    // 1.Get conversationID and Conversation text from Map
+    //2.Take Text Value and turn into conversation object
+    //3.Use conversation Object to get information about conversation
+    //4.
     public boolean writeToFile() {
-        try (PrintWriter writer = new PrintWriter(new FileWriter("conversations.txt"))) {
+        try (PrintWriter writer = new PrintWriter(new FileWriter("conversations.txt",true))) {
             for (Map.Entry<String, Conversations> entry : conversations.entrySet()) {
                 String conversationID = entry.getKey();
-                Conversations conv = entry.getValue();
-                String senderID = conv.getSenderID();
-                String recipientID = conv.getRecipientID();
-                List<String> messaging = conv.getMessages();
-                StringBuilder totalMessages = new StringBuilder();
+                Conversations conv = new Conversations(conversationID); //Initialize and populate conversation class
+                //conv.ReadFormat(String.valueOf(entry.getValue()));
+                String senderID = conv.getSenderID(); //message[1];
+                String recipientID = conv.getRecipientID(); //message[2];
+                List<String> messaging = conv.getMessages(); //get Messaging array from conversation class
+                StringBuilder totalMessages = new StringBuilder(); //Initialize array to
                 for (String message : messaging) {
-                    totalMessages.append(",").append(message);
+                    totalMessages.append(",").append(message); //Write the multiple messages out as a string for the conversation
                 }
                 //Format: conversationID1///senderID1///recipientID1///message1,message2,message3
                 writer.println(String.format("%s///%s///%s///%s", conversationID, senderID, recipientID,
                         totalMessages.substring(1)));
             }
+            //writer.close();
         } catch (IOException e) {
             return false;
         }
