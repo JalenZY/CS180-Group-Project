@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.List;
 /**
  * ConversationsInterface.java
@@ -5,27 +6,30 @@ import java.util.List;
  * Lists all the methods and their paramaters used by Conversations.java
  *
  * @author ThomasRalton, L105
- * @version April 1, 2024
+ * @version April 15, 2024
  */
 public interface ConversationsInterface {
     // Method to add a message to the conversation
-    void addMessage(Messaging message);
+    void addMessage(String message);
 
     // Method to get the last message in the conversation
     String getLastMessage();
 
-    // Method to archive the conversation
+    // Method to break apart and assign variables from an imported conversation file String
+    void ReadFormat(String conversationInfo);
+
+    // Method to write conversation data to a file
+    void writeToFile();
+
+    // Setter methods
+    void setConversationID(String conversationID);
+    void setMessages(ArrayList<String> messages);
     void archive();
 
-    // Getter for the conversation ID
+    // Getter methods
     String getConversationID();
-
-    // Getter for the participant IDs
-    List<String> getParticipantIDs();
-
-    // Getter for the list of messages
-    List<String> getMessages();
-
-    // Method to write conversation details to a file
-    void writeToFile(String filename);
+    ArrayList<String> getMessages();
+    boolean isArchived();
+    String getSenderID();
+    String getRecipientID();
 }
