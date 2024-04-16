@@ -11,26 +11,26 @@ import java.util.Map;
  * @version April 15, 2024
  */
 public interface DirectMessagingDatabaseInterface {
-    // Method to send a message to a conversation
+    // Send a message to a conversation; create the conversation if it does not exist
     boolean sendMessage(String conversationID, String senderID, String recipientID, String date, String messageContent);
 
-    // Method to retrieve a conversation's messages by ID
+    // Helper Method - Retrieve a conversation messages by ID
     ArrayList<String> getConversation(String conversationID);
 
-    // Method to retrieve all conversations for a user
+    // Helper Method - Retrieve all conversations for a user - conversations as in object
     List<Conversations> getUserConversations(String userId);
 
-    // Method to delete a conversation
+    // Delete a conversation - conversation object and all respective messages in process
     boolean deleteConversation(String conversationId);
 
-    // Getter methods for class properties
+    // Additional getters for class properties
     Map<String, Conversations> getConversationMap();
+
     Conversations getConversationObj(String conversationID);
+
     Map<String, List<String>> getUserConversationsMap();
 
-    // Method to write conversations to a file
-    boolean writeToFile();
-
-    // Method to read conversations from a file
+    // Read conversations and userConversations from a text file
+    // Writes to a Map
     boolean readFromFile();
 }
