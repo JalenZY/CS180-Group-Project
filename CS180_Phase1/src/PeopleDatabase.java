@@ -225,7 +225,7 @@ public class PeopleDatabase {
 
 
     // Unblock a user
-    public boolean unblockUser(String blockerID, String blockedID, String date) {
+    public boolean unblockUser(String blockerID, String blockedID) {
         //Date Created when User Blocks - Server Creates THIS!!!!!!!!!!!!!!!!!!!!!!!
         //blockerID: user1ID
         //blockedID: user2ID
@@ -283,7 +283,7 @@ public class PeopleDatabase {
         FriendsList accepted = new FriendsList(user1ID, user2ID, "Active", date); //Status set to Active
 
         //Remove old friendshipID from textFile
-        removeFriend(user1ID, user2ID, date);
+        removeFriend(user1ID, user2ID);
 
         //Add new FriendshipID to textFile
         friendships = readFileToArray(friendshipList); //ArrayList containing current text file of all friendships
@@ -304,13 +304,13 @@ public class PeopleDatabase {
         return true; //True for friendship being successfully accepted
     }
 
-    public boolean deniedFriend (String user1ID, String user2ID, String date) {
+    public boolean deniedFriend (String user1ID, String user2ID) {
         //Remove friendship from text file
-        return (removeFriend(user1ID, user2ID, date));
+        return (removeFriend(user1ID, user2ID));
     }
 
     // Remove a friend
-    public boolean removeFriend(String user1ID, String user2ID, String date) {
+    public boolean removeFriend(String user1ID, String user2ID) {
         //FriendshipList format: FID_username1_username2_status
         friendships = readFileToArray(friendshipList); //Format of blockedUsers: "BID_user1ID_user2ID_date"
         //FriendsList friendship = new FriendsList(user1ID, user2ID, "Inactive", date);
@@ -331,8 +331,70 @@ public class PeopleDatabase {
             }
         }
         return false;
+
     }
 
+    //Used in logic of server to check if block exists between users, which specifically
+    //unblockerID being the first userID in the text file - means that ID initiated the block
+    //and has the ability to unblock the block
+    public boolean checkSpecificBlock(String unBlockerID, String blockedID) {
+        String block = "";
+        for (int i = 0; i < blockedUsers.size(); i++) {
+            String userString = blockedUsers.get(i);
+            //Check if the userString contains the userID
+            if (userString.contains(unBlockerID) && userString.contains(blockedID)) {
+                //If userID is found, remove entire row from the ArrayList
+                String[] parts = userString.split("_");
+                if (parts[1].equals(unBlockerID)) {
+                    return true; //True as in user can unblock
+                }
+            }
+        }
+        return false; //False for user not being removed from blocked list
+    }
+
+    //Used in logic of server to check if a block exists between two users
+    public boolean checkBlock(String user1ID, String user2ID) {
+        for (int i = 0; i < blockedUsers.size(); i++) {
+            String userString = blockedUsers.get(i);
+            //Check if the userString contains the userID
+            if (userString.contains(user1ID) && userString.contains(user2ID)) {
+                //If userIDs are found, then return true
+                return true;
+            }
+        }
+        return false; //False for user not being removed from blocked list
+    }
+
+    //Used in logic of server to check if two users have a friendship relationship
+    public boolean checkFriend(String user1ID, String user2ID) {
+        //Iterate through arrayList scanning each line for userID
+        for (int i = 0; i < friendships.size(); i++) {
+            String userString = friendships.get(i);
+            //Check if the userString contains the userID
+            if (userString.contains(user1ID) && userString.contains(user2ID)) {
+                return true; //True for Friendship being found
+            }
+        }
+        return false; //Friendship not found
+    }
+
+    //Method to get userID given userName
+    public String userNameToUserID(String userName) {
+        users = readFileToArray(userProfileList); //Takes UserProfile.txt and makes it into an array List
+        //Iterate through arrayList scanning each line for userID
+        for (int i = 0; i < users.size(); i++) {
+            String userString = users.get(i);
+            //Check if the userString contains the userID
+            if (userString.contains(userName)) {
+                //Format:userID,username,userFirstname,userLastname,email,password,birthday,gender,hobby1,hobby2,hobby3,hobby4,
+                // homeLocation,usersRegion,collegeName;
+                String[] parts = userString.split("//");
+                return parts[0]; //Return userID
+            }
+        }
+        return null;
+    }
 
 
 
