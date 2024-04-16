@@ -10,36 +10,48 @@ import java.util.Date;
  */
 public interface PeopleDatabaseInterface {
 
-    // Helper method to read text files into an ArrayList
-    ArrayList<String> readFileToArray(String filename);
-
-    // Method to write changes to a text file
-    void writeChangesToFile(String filename, ArrayList<String> updatedInfo);
-
-    // Method to add a new user to the database
+    // Add a new user to the database
     boolean addUser(UserProfile user);
 
-    // Method to remove a user from the database
+    // Remove a user from the database
     boolean removeUser(String userID);
 
-    // Method to update a user's profile
+    // Update a user's profile
     boolean updateUserProfile(String userID, String toBeUpdated, String updatedPart);
 
-    // Method to block a user
+    // Block a user
     boolean blockUser(String blockerID, String blockedID, String date);
 
-    // Method to unblock a user
-    boolean unblockUser(String blockerID, String blockedID, String date);
+    // Unblock a user
+    boolean unblockUser(String blockerID, String blockedID);
 
-    // Method to add a friend
+    // Add a friend
     boolean addFriend(String user1ID, String user2ID, String date);
 
-    // Method to accept a friend request
+    // Accept a friend request
     boolean acceptFriend(String user1ID, String user2ID, String date);
 
-    // Method to deny a friend request
-    boolean deniedFriend(String user1ID, String user2ID, String date);
+    // Deny a friend request
+    boolean denyFriend(String user1ID, String user2ID);
 
-    // Method to remove a friend
-    boolean removeFriend(String user1ID, String user2ID, String date);
+    // Remove a friend
+    boolean removeFriend(String user1ID, String user2ID);
+
+    // Check if a specific block exists between two users
+    boolean checkSpecificBlock(String unBlockerID, String blockedID);
+
+    // Check if a block exists between two users
+    boolean checkBlock(String user1ID, String user2ID);
+
+    // Check if two users are friends
+    boolean checkFriend(String user1ID, String user2ID);
+
+    // Method to get userID given userName
+    String userNameToUserID(String userName);
+
+    // Helper Method that Reads Text Files as an ArrayList
+    ArrayList<String> readFileToArray(String filename);
+
+    // Method to rewrite text Files
+    void writeChangesToFile(String filename, ArrayList<String> updatedInfo);
 }
