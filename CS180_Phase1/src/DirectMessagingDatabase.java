@@ -48,7 +48,7 @@ public class DirectMessagingDatabase {
         return (writeToFile());
     }
 
-    //Retrieve a conversation messages by ID
+    //Helper Method - Retrieve a conversation messages by ID
     public ArrayList<String> getConversation(String conversationID) {
         Conversations conv = conversations.get(conversationID);
         if (conv != null) {
@@ -58,7 +58,7 @@ public class DirectMessagingDatabase {
         }
     }
 
-    //Retrieve all conversations for a user - conversations as in object
+    //Helper Method - Retrieve all conversations for a user - conversations as in object
     public List<Conversations> getUserConversations(String userId) {
         List<String> conversationIds = userConversations.getOrDefault(userId, new ArrayList<>());
         List<Conversations> userConvs = new ArrayList<>();
@@ -151,32 +151,6 @@ public class DirectMessagingDatabase {
     }
 
     //Helper Method, Generate a unique Message ID
-//    private String generateUniqueMessageId() {
-//        String messageID;
-//        boolean unique = true;
-//        //Generate until a unique ID is found - checks against all other message ID
-//        do {
-//            messageID = UUID.randomUUID().toString();
-//            try  {
-//                BufferedReader reader = new BufferedReader(new FileReader("conversations.txt"));
-//                String line;
-//                while ((line = reader.readLine()) != null) {
-//                    String[] parts = line.split("///");
-//                    String messageData = parts[3];
-//                    String[] messageParts = messageData.split("//");
-//
-//                    if (parts.length > 1 && messageParts[1].equals(messageID)) { //Check against all other message IDs
-//                        //Found a matching message ID
-//                        unique = false; //Not unique
-//                    }
-//                }
-//            } catch (IOException e) {
-//                e.printStackTrace(); //Handle or log the exception as needed
-//            }
-//        } while (!unique);
-//        return messageID;
-//    }
-    //Helper Method, Generate a unique Message ID
     private String generateUniqueMessageId() {
         String messageID;
         boolean unique = true;
@@ -226,6 +200,28 @@ public class DirectMessagingDatabase {
         //ConversationID Format: "senderIDRecipientID"
         String conversationID = String.format("%s%s", senderID, recipientID);
         return conversationID;
+    }
+
+    //Method used to find the conversationID between two users given userID
+    private String findConvID(String user1ID, String user2ID) {
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader("conversations.txt"));
+            String line;
+            String ID1 = String.format("%s%s", user1ID, user2ID);
+            String ID2 = String.format("%s%s", user2ID, user1ID);
+            while ((line = reader.readLine()) != null) {
+                if (line.contains(ID1) || line.contains(ID2)) {
+                    String[] parts = line.split("///");
+                    //Format: conversationID1///senderID1///recipientID1///message1,message2,message3
+                    return parts[0];
+                }
+            }
+        } catch (FileNotFoundException e) {
+            return "error";
+        } catch (IOException e) {
+            return "error";
+        }
+        return "No ID";
     }
 
     // Write conversations text File -- Format: conversationID1///senderID1///recipientID1///message1,message2,message3
