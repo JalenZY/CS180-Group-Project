@@ -18,7 +18,7 @@
 With these changes the test case should properly run and show all passes. However, a test case might show a "fail" if one of the text files is not updated, this is due to the fact that the peopleDatabase.java class methods return true for the proper addition or removal of a string false if the string already exists or if there was some other error. 
 
 
-- DirectMessagingDatabase.java
+- DirectMessagingDatabaseTestCase.java
   The test cases for this method are a bit wonky and will properly run the program, however the strings that they use to check against the text files are not always correctly grabbing the proper string segment and therefore show many test cases as failing. A way to visible check that the database is able to properly add and update the respective text files is to inspect the "conversations.txt" file and "messagesStorage.txt" files. If this is done, one will notice that the conversations.txt file has an updated conversation string added, and that the messagesStorage text file has more strings added that have the conversation ID "conv1"
 
 - PeopleDatabase.java
