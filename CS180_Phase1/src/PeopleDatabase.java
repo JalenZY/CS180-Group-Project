@@ -238,11 +238,15 @@ public class PeopleDatabase {
             String userString = blockedUsers.get(i);
             //Check if the userString contains the userID
             if (userString.contains(blockerID) && userString.contains(blockedID)) {
-                //If userID is found, remove entire row from the ArrayList
-                blockedUsers.remove(i);
-                //found = true;
-                writeChangesToFile(blockedUserList, blockedUsers); //Write new changes to Text File
-                return true; //True for user been removed from blocked list
+                if (checkSpecificBlock(blockerID, blockedID)) { //Check that the one initiated the unblock is the one that initiated the block
+                    //If userID is found, remove entire row from the ArrayList
+                    blockedUsers.remove(i);
+                    //found = true;
+                    writeChangesToFile(blockedUserList, blockedUsers); //Write new changes to Text File
+                    return true; //True for user been removed from blocked list
+                } else {
+                    return false; //If blockerID did not initiate block, then don't unblock
+                }
             }
         }
         return false; //False for user not being removed from blocked list
@@ -339,6 +343,7 @@ public class PeopleDatabase {
     //and has the ability to unblock the block
     public boolean checkSpecificBlock(String unBlockerID, String blockedID) {
         String block = "";
+        blockedUsers = readFileToArray(blockedUserList);
         for (int i = 0; i < blockedUsers.size(); i++) {
             String userString = blockedUsers.get(i);
             //Check if the userString contains the userID
@@ -355,12 +360,13 @@ public class PeopleDatabase {
 
     //Used in logic of server to check if a block exists between two users
     public boolean checkBlock(String user1ID, String user2ID) {
+        blockedUsers = readFileToArray(blockedUserList);
         for (int i = 0; i < blockedUsers.size(); i++) {
             String userString = blockedUsers.get(i);
             //Check if the userString contains the userID
             if (userString.contains(user1ID) && userString.contains(user2ID)) {
                 //If userIDs are found, then return true
-                return true;
+                return true; //User's are blocked
             }
         }
         return false; //False for user not being removed from blocked list
@@ -368,6 +374,7 @@ public class PeopleDatabase {
 
     //Used in logic of server to check if two users have a friendship relationship
     public boolean checkFriend(String user1ID, String user2ID) {
+        friendships = readFileToArray(friendshipList);
         //Iterate through arrayList scanning each line for userID
         for (int i = 0; i < friendships.size(); i++) {
             String userString = friendships.get(i);
@@ -389,7 +396,7 @@ public class PeopleDatabase {
             if (userString.contains(userName)) {
                 //Format:userID,username,userFirstname,userLastname,email,password,birthday,gender,hobby1,hobby2,hobby3,hobby4,
                 // homeLocation,usersRegion,collegeName;
-                String[] parts = userString.split("//");
+                String[] parts = userString.split(",");
                 return parts[0]; //Return userID
             }
         }
@@ -397,7 +404,35 @@ public class PeopleDatabase {
     }
 
 
+    //Used in logic of server to check if username exists
+    public boolean checkUser(String userName) {
+        //String userID = userNameToUserID(userName); //Get Username userID
+        users = readFileToArray(userProfileList); //Takes UserProfile.txt and makes it into an array List
+        //Iterate through arrayList scanning each line for userID
+        for (int i = 0; i < users.size(); i++) {
+            String userString = users.get(i);
+            //Check if the userString contains the userID
+            if (userString.contains(userName)) {
+                return true; //User Exists
+            }
+        }
+        return false; //User doesn't exist
+    }
 
+    //Used in logic of server to check if username exists
+    public boolean userLogin(String userName, String password) {
+        //String userID = userNameToUserID(userName); //Get Username userID
+        users = readFileToArray(userProfileList); //Takes UserProfile.txt and makes it into an array List
+        //Iterate through arrayList scanning each line for userID
+        for (int i = 0; i < users.size(); i++) {
+            String userString = users.get(i);
+            //Check if the userString contains the userID
+            if (userString.contains(userName) && userString.contains(password)) {
+                return true; //User Exists
+            }
+        }
+        return false; //User doesn't exist
+    }
 
 
     //ADD FRIENDS COMPILATION LIST!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
