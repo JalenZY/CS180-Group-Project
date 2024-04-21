@@ -39,7 +39,7 @@ public class BlockedList extends Object {
         this.user1ID = user1ID;
         this.user2ID = user2ID;
         this.date = date;
-        blockedID = String.format("BID_%s_%s_%s", user1ID, user2ID, date); //Temporary BlockedID
+        this.blockedID = String.format("BID_%s_%s_%s", user1ID, user2ID, date); //Temporary BlockedID
     }
 
     //Sets userIDs given users Names
