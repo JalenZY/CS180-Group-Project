@@ -1,9 +1,10 @@
 import java.io.*;
+import java.lang.reflect.Array;
 import java.util.*;
 /**
  * DirectMessagingDatabase.java
  *
- * The database for direct messagings
+ * The database for direct messaging
  *
  * @author Zhengyi Jiang/Thomas Ralston, L105
  * @version April 15, 2024
@@ -36,16 +37,16 @@ public class DirectMessagingDatabase {
         synchronized (conversation) {
             //Create and format new message object
             Messaging message = new Messaging(messageId, conversationID, senderID, recipientID, date, messageContent);
-            //Add new message to database text file
+            //Add new message to database RAM text file
             conversation.addMessage(message);
         }
 
         //Update user conversations - update both user1 and user2
-        updateUserConversations(senderID, conversationID);
-        updateUserConversations(recipientID,conversationID);
+        //updateUserConversations(senderID, conversationID);
+        //updateUserConversations(recipientID,conversationID);
 
         //Write the conversation Object Key relation to a text file along with userConversation to another file
-        return (writeToFile());
+        return (writeToFile(conversationID, senderID, recipientID));
     }
 
     //Helper Method - Retrieve a conversation messages by ID
@@ -116,11 +117,7 @@ public class DirectMessagingDatabase {
         // Rename the temporary file to the original file
         File file = new File(filePath);
         File tempFile = new File(filePath + ".tmp");
-        if (tempFile.renameTo(file)) {
-            return true;
-        } else {
-            return false;
-        }
+        return tempFile.renameTo(file);
     }
 
 
@@ -157,14 +154,9 @@ public class DirectMessagingDatabase {
         Random random = new Random();
         // Generate until a unique ID is found
         do {
-            // Generate a random string of 4-6 characters
-            int length = random.nextInt(3) + 4; // Random length between 4 and 6
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < length; i++) {
-                char randomChar = (char) (random.nextInt(26) + 'a'); // Random lowercase letter
-                sb.append(randomChar);
-            }
-            messageID = sb.toString();
+            Random rand = new Random();
+            messageID = String.valueOf(rand.nextInt(100));
+            //messageID = sb.toString();
             // Check if the generated ID already exists
             try {
                 BufferedReader reader = new BufferedReader(new FileReader("conversations.txt"));
@@ -196,19 +188,21 @@ public class DirectMessagingDatabase {
 
 
     //Generate a unique conversation ID
-    private String generateUniqueConversationID(String senderID, String recipientID) {
+    public String generateUniqueConversationID(String senderID, String recipientID) {
         //ConversationID Format: "senderIDRecipientID"
-        String conversationID = String.format("%s%s", senderID, recipientID);
+        String user2 = recipientID.substring(4);
+        String conversationID = String.format("%s%s", senderID, user2);
         return conversationID;
     }
 
     //Method used to find the conversationID between two users given userID
-    private String findConvID(String user1ID, String user2ID) {
+    public String findConvID(String user1ID, String user2ID) {
         try {
             BufferedReader reader = new BufferedReader(new FileReader("conversations.txt"));
             String line;
-            String ID1 = String.format("%s%s", user1ID, user2ID);
-            String ID2 = String.format("%s%s", user2ID, user1ID);
+            String user2 = user2ID.substring(4);
+            String ID1 = String.format("%s%s", user1ID, user2);
+            String ID2 = String.format("%s%s", user2, user1ID);
             while ((line = reader.readLine()) != null) {
                 if (line.contains(ID1) || line.contains(ID2)) {
                     String[] parts = line.split("///");
@@ -224,33 +218,96 @@ public class DirectMessagingDatabase {
         return "No ID";
     }
 
-    // Write conversations text File -- Format: conversationID1///senderID1///recipientID1///message1,message2,message3
-    // 1.Get conversationID and Conversation text from Map
+    //Write to conversations text File -- Format: conversationID1///senderID1///recipientID1///message1,message2,message3
+    //1.Get conversationID and Conversation text from Map
     //2.Take Text Value and turn into conversation object
     //3.Use conversation Object to get information about conversation
     //4.
-    public boolean writeToFile() {
-        try (PrintWriter writer = new PrintWriter(new FileWriter("conversations.txt",true))) {
-            for (Map.Entry<String, Conversations> entry : conversations.entrySet()) {
-                String conversationID = entry.getKey();
-                Conversations conv = new Conversations(conversationID); //Initialize and populate conversation class
-                //conv.ReadFormat(String.valueOf(entry.getValue()));
-                String senderID = conv.getSenderID(); //message[1];
-                String recipientID = conv.getRecipientID(); //message[2];
-                List<String> messaging = conv.getMessages(); //get Messaging array from conversation class
-                StringBuilder totalMessages = new StringBuilder(); //Initialize array to
-                for (String message : messaging) {
-                    totalMessages.append(",").append(message); //Write the multiple messages out as a string for the conversation
+
+    //conv1///sender1///recipient1///conv1//msg1//sender1//recipient1//2024-04-13//Hello, how are you?,conv1//msg2//sender1//recipient1//2024-04-14//I'm fine, thank you.,conv1//msg3//sender1//recipient1//2024-04-15//What are you doing?
+    //conv2///sender2///recipient2///conv2//msg3//sender2//recipient2//2024-04-13//Hello, how are you?,conv2//msg4//sender2//recipient2//2024-04-14//I'm fine
+    //conv3///sender3///recipient3///conv3//msg6//sender3//recipient3//2024-04-15//What are you doing?conv1///sender1///recipient1///conv1//msg1//sender1//recipient1//2024-04-13//Hello, how are you?,conv1//conv1///sender1///recipient1///conv1//msg1//sender1//recipient1//2024-04-13//Hello, how are you?,conv1//msg2//sender1//recipient1//2024-04-14//I'm fine, thank you.,conv1//msg1//sender1//recipient1//2024-04-13//Hello, how are you?,conv1//msg3//sender1//recipient1//2024-04-15//What are you doing?,conv1//msg1//sender1//recipient1//2024-04-13//Hello, how are you?,conv1//msg2//sender1//recipient1//2024-04-14//I'm fine, thank you.,conv1//msg1//sender1//recipient1//2024-04-13//Hello, how are you?conv1///sender1///recipient1///conv1//msg1//sender1//recipient1//2024-04-13//Hello, how are you?,conv1//msg2//sender1//recipient1//2024-04-14//I'm fine, thank you.,conv1//msg1//sender1//recipient1//2024-04-13//Hello, how are you?,conv1//msg3//sender1//recipient1//2024-04-15//What are you doing?,conv1//msg1//sender1//recipient1//2024-04-13//Hello, how are you?,conv1//msg2//sender1//recipient1//2024-04-14//I'm fine, thank you.,conv1//msg1//sender1//recipient1//2024-04-13//Hello, how are you?user7339///null///null///conv3///null///null///[[conv1///sender1///recipient1///conv1//msg1//sender1//recipient1//2024-04-13//Hello, how are you?,conv1//msg2//sender1//recipient1//2024-04-14//I'm fine, thank you.,conv1//msg3//sender1//recipient1//2024-04-15//What are you doing?, conv2///sender2///recipient2///conv2//msg3//sender2//recipient2//2024-04-13//Hello, how are you?,conv2//msg4//sender2//recipient2//2024-04-14//I'm fineconv1///sender1///recipient1///conv1//msg1//sender1//recipient1//2024-04-13//Hello, how are you?,conv1//msg2//sender1//recipient1//2024-04-14//I'm fine, thank you.,conv1//msg3//sender1//recipient1//2024-04-15//What are you doing?conv1///sender1///recipient1///conv1//msg1//sender1//recipient1//2024-04-13//Hello, how are you?,conv1//msg2//sender1//recipient1//2024-04-14//I'm fine, thank you.,conv1//msg3//sender1//recipient1//2024-04-15//What are you doing?[]conv1///sender1///recipient1///conv1//msg1//sender1//recipient1//2024-04-13//Hello, how are you?,conv1//msg2//sender1//recipient1//2024-04-14//I'm fine, thank you.,conv1//msg3//sender1//recipient1//2024-04-15//What are you doing?conv1///sender1///recipient1///conv1//msg1//sender1//recipient1//2024-04-13//Hello, how are you?,conv1//msg2//sender1//recipient1//2024-04-14//I'm fine, thank you.,conv1//msg3//sender1//recipient1//2024-04-15//What are you doing?
+    public boolean writeToFile(String conversationID, String senderID, String recipientID) {
+        try {
+            ArrayList<String> conv = readFileToArray("conversations.txt");
+
+            boolean contains = false;
+            Iterator<String> iterator = conv.iterator();
+            while (iterator.hasNext()) {
+                String userString = iterator.next();
+                if (userString.contains(conversationID)) {
+                    contains = true;
+                    iterator.remove(); // Remove existing conversation string
+                    break;
                 }
-                //Format: conversationID1///senderID1///recipientID1///message1,message2,message3
-                writer.println(String.format("%s///%s///%s///%s", conversationID, senderID, recipientID,
-                        totalMessages.substring(1)));
             }
-            //writer.close();
+
+            //Conversations conv3 = new Conversations(conversationID, senderID, recipientID); //get conversation ID from conversations Map List
+            Conversations conv3 = conversations.get(conversationID);
+            String start = String.format("%s///%s///%s///", conversationID, conv3.getSenderID(), conv3.getRecipientID());
+            StringBuilder conversationBuilder = new StringBuilder();
+            int passes = 0;
+
+            for (String message : conv3.getMessages()) { //get messages from Map List
+                if (passes == 0) {
+                    conversationBuilder.append(message);
+                } else {
+                    conversationBuilder.append(",").append(message);
+                }
+                passes++;
+            }
+            ArrayList<String> specificConv = new ArrayList<>();
+            specificConv.add(start + conversationBuilder);
+
+            ArrayList<String> combinedList = new ArrayList<>();
+            combinedList.addAll(conv);
+            combinedList.addAll(specificConv);
+
+            BufferedWriter writer = new BufferedWriter(new FileWriter("conversations.txt", false));
+            //Removes Blank Space from beginning of text
+            for (int i = 0; i < combinedList.size(); i++) {
+                // Check if it's the first line
+                if (i != 0) {
+                    writer.newLine(); //Add a newline character if it's not the first line
+                }
+                writer.write(combinedList.get(i)); //Write the line to the file
+            }
+
+//            for (String line : combinedList) {
+//                writer.newLine();
+//                writer.write(line);
+//            }
+
+//            for (String line : specificConv) {
+//                writer.println(line);
+//            }
+            writer.close();
+
         } catch (IOException e) {
+            e.printStackTrace();
             return false;
         }
         return true;
+    }
+
+
+
+    //Helper Method that Writes Text Files as an ArrayList
+    public ArrayList<String> readFileToArray(String filename) {
+        ArrayList<String> lines = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                //Skip empty lines or lines with only whitespace characters
+                if (!line.trim().isEmpty()) {
+                    lines.add(line);
+                }
+            }
+            return lines;
+        } catch (IOException e) {
+            System.err.println("Error reading file: " + e.getMessage());
+        }
+        return null;
     }
 
     // Read conversations and userConversations from a text file
