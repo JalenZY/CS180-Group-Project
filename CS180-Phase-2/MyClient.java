@@ -1,7 +1,4 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
 
@@ -44,37 +41,40 @@ public class MyClient {
 //            ReceiveDataThread rcvThread = new ReceiveDataThread(socket);
 //            rcvThread.start();
 
-            boolean repeat = true;
-            boolean mainMenu = true; //Boolean to initiate the main menu list
-            String fromUserName = "";
-            while (repeat) {
-                //Provide Option to create new account
-                System.out.println("Enter your username or Enter 1 to create a new Account!");
-                fromUserName = stdIn.readLine();
-                if (fromUserName.equals("1")) {
-                    addUser(out, stdIn, in);
-                    mainMenu = false; //Don't display the main menu
-                    String serverResponse = in.readLine();
-                    if (serverResponse.equals("User successfully added.")) {
-                        System.out.println("Account Successfully Created, please Login!!");
-                    } else {
-                        System.out.println("Error, Please Try Again!");
-                    }
-                } else {
-                    out.println("USERNAME###" + fromUserName);
-                    String serverResponse = in.readLine();
-                    if (serverResponse.equals("Welcome User!")) {
-                        System.out.println("Welcome User!");
-                        repeat = false;
-                    } else if (serverResponse.equals("Please Try Again")) {
-                        System.out.println("Please Try Again");
-                    }
-                }
-            }
+//            boolean repeat = true;
+//            boolean mainMenu = true; //Boolean to initiate the main menu list
+//            String fromUserName = "";
+//            while (repeat) {
+//                //Provide Option to create new account
+//                System.out.println("Enter your username or Enter 1 to create a new Account!");
+//                fromUserName = stdIn.readLine();
+//                if (fromUserName.equals("1")) {
+//                    addUser(out, stdIn, in);
+//                    mainMenu = false; //Don't display the main menu
+//                    String serverResponse = in.readLine();
+//                    if (serverResponse.equals("User successfully added.")) {
+//                        System.out.println("Account Successfully Created, please Login!!");
+//                    } else {
+//                        System.out.println("Error, Please Try Again!");
+//                    }
+//                } else {
+//                    out.println("USERNAME###" + fromUserName);
+//                    String serverResponse = in.readLine();
+//                    if (serverResponse.equals("Welcome User!")) {
+//                        System.out.println("Welcome User!");
+//                        repeat = false;
+//                    } else if (serverResponse.equals("Please Try Again")) {
+//                        System.out.println("Please Try Again");
+//                    }
+//                }
+//            }
 
+            String[] parts = manageLogIn(stdIn, in, out).split("-");
+            String mainMenu = parts[0];
+            String fromUserName = parts[1];
             String actionType;
             boolean stop = false;
-            while ((!stop) || (mainMenu)) {
+            while ((!stop) || (mainMenu.equals("True"))) {
                 System.out.println("\nChoose an action:");
                 System.out.println("1. Add User");
                 System.out.println("2. Remove User");
@@ -85,6 +85,8 @@ public class MyClient {
                 System.out.println("7. Accept Friendship");
                 System.out.println("8. Decline Friendship");
                 System.out.println("9. Remove Friend");
+                System.out.println("10. Send Message");
+                System.out.println("11. Switch Accounts");
                 System.out.println("0. Exit");
                 System.out.println("Enter the number of your choice:");
 
@@ -117,6 +119,12 @@ public class MyClient {
                     case "9":
                         manageFriendship(out, fromUserName, stdIn, in,"REMOVEFRIEND");
                         break;
+                    case "10":
+                        manageSendMessage(out, fromUserName, stdIn, in);
+                        break;
+                    case "11":
+                        manageLogIn(stdIn, in, out);
+                        break;
                     case "0":
                         System.out.println("Exiting program.");
                         stop = true;
@@ -137,6 +145,39 @@ public class MyClient {
         } catch (Exception e) {
             System.out.println("Error connecting to server: " + e.getMessage());
         }
+    }
+
+    private static String manageLogIn(BufferedReader stdIn, BufferedReader in, PrintWriter out) throws IOException {
+        boolean repeat = true;
+        boolean mainMenu = true; //Boolean to initiate the main menu list
+        String fromUserName = "";
+        while (repeat) {
+            //Provide Option to create new account
+            System.out.println("Enter your username or Enter 1 to create a new Account!");
+            fromUserName = stdIn.readLine();
+            if (fromUserName.equals("1")) {
+                addUser(out, stdIn, in);
+                mainMenu = false; //Don't display the main menu
+                String serverResponse = in.readLine();
+                if (serverResponse.equals("User successfully added.")) {
+                    System.out.println("Account Successfully Created, please Login!!");
+                } else {
+                    System.out.println("Error, Please Try Again!");
+                }
+            } else {
+                System.out.println("Enter your password:");
+                String password = stdIn.readLine();
+                out.println("USERLOGIN###" + fromUserName + "###" + password);
+                String serverResponse = in.readLine();
+                if (serverResponse.equals("Welcome User!")) {
+                    System.out.println("Welcome User!");
+                    repeat = false;
+                } else if (serverResponse.equals("Please Try Again")) {
+                    System.out.println("Please Try Again");
+                }
+            }
+        }
+        return String.format(mainMenu + "-" + fromUserName); //Tells if Menu needs to be displayed
     }
 
     private static void addUser(PrintWriter out, BufferedReader stdIn, BufferedReader in) throws IOException {
@@ -276,5 +317,42 @@ public class MyClient {
         System.out.println("Enter the username of the user:");
         String targetUsername = stdIn.readLine();
         out.println(action + "###" + username + "###" + targetUsername);
+    }
+
+    private static void manageSendMessage(PrintWriter out, String username, BufferedReader stdIn, BufferedReader in) throws IOException {
+        System.out.println("Enter the username of the user you'd like to Message:");
+        String targetUsername = stdIn.readLine();
+        boolean validUser = false;
+        while (!validUser) { //Check that Username entered is valid
+            out.println("USERNAME###" + targetUsername);
+            String serverResponse = in.readLine();
+            if (serverResponse.equals("Please Try Again")) {
+                System.out.println("Please Enter the Valid UserName of the User You Want to Message:");
+                targetUsername = stdIn.readLine();
+            } else if (serverResponse.equals("Welcome User!"))  {
+                validUser = true;
+            }
+        }
+
+        String message = "";
+        while (!message.equals("@EXIT")) { //Allows for continues sending of messages
+            System.out.println("Enter the Message you'd Like to Send!:");
+            message = stdIn.readLine();
+            out.println("SENDMESSAGE###" + username + "###" + targetUsername + "###" + message); //Send message information to Server
+            String serverResponse = in.readLine();
+            if (serverResponse.equals("Error: Recipient UserName does Not Exist")) {
+                System.out.println("Error: Recipient UserName does Not Exist");
+            } else if (serverResponse.equals("Error: User Block Exists")) {
+                System.out.println("Error, Block Exists Between Users");
+                return;
+            } else if (serverResponse.equals("Error: Friendship Does Not Exist")) {
+                System.out.println("Error, User is not a Friend");
+                return;
+            } else if (serverResponse.equals("Error: Conversation Corrupted")) {
+                System.out.println("Error, Conversation Might Be Corrupted, please Try again");
+            } else if (serverResponse.equals("Error: Insufficient data provided.")) {
+                System.out.println("Error: Insufficient data, Please Try Again");
+            }
+        }
     }
 }
