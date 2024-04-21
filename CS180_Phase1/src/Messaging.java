@@ -96,7 +96,7 @@ public class Messaging {
     public String toString() {
         //Format: "conversationID//messageID//senderID//recipientID//date//content"
         return (String.format(("%s//%s//%s//%s//%s//%s"), conversationID, messageID, senderID, recipientID, date,
-                content.replace(".--.",",")));
+                content)); //.replace(".--.",",")
 
     }
 
