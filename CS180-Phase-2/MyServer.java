@@ -10,6 +10,7 @@ public class MyServer {
     private static ArrayList<String> loginUserNameList = new ArrayList<>();
     private static ArrayList<Socket> loginUserSocketList = new ArrayList<>();
     private static PeopleDatabase peopleDb = new PeopleDatabase("userProfileList.txt", "friendshipList.txt", "blockedUserList.txt");
+    private static DirectMessagingDatabase messagingDb = new DirectMessagingDatabase();
 
     public static void main(String[] args) {
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
@@ -57,6 +58,9 @@ public class MyServer {
             case "USERNAME":
                 handleCheckUser(parts, out);
                 break;
+            case "USERLOGIN":
+                handleUserLogin(parts, out);
+                break;
             case "ADDUSER":
                 handleAddUser(parts, out);
                 break;
@@ -84,9 +88,66 @@ public class MyServer {
             case "REMOVEFRIEND":
                 handleManageFriendship(parts, out, 4);
                 break;
+            case "SENDMESSAGE":
+                handleSendMessage(parts, out);
             default:
                 out.println("Invalid command");
                 break;
+        }
+    }
+
+    private static void handleSendMessage(String[] parts, PrintWriter out) {
+        if (parts.length < 3) {
+            out.println("Error: Insufficient data provided.");
+            return;
+        }
+        String username = parts[1];
+        String targetUserName = parts[2];
+        String message = parts[3];
+        String user1ID = peopleDb.userNameToUserID(username);
+        String user2ID = peopleDb.userNameToUserID(targetUserName);
+        Date date = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String formattedDate = sdf.format(date);
+        String conversationID = "";
+
+
+        if (!peopleDb.checkUser(targetUserName)) { //Check that recipient exists
+            out.write("Error: Recipient UserName does Not Exist");
+            out.println();
+            out.flush(); //Ensure data is sent to the client.
+            return;
+        } else if (peopleDb.checkBlock(user1ID, user2ID)) { //Check if Block exists
+            out.write("Error: User Block Exists");
+            out.println();
+            out.flush(); //Ensure data is sent to the client.
+            return;
+        } else if (!peopleDb.checkFriend(user1ID, user2ID)) { //Check if users are friends
+            out.write("Error: Friendship Does Not Exist");
+            out.println();
+            out.flush(); //Ensure data is sent to the client.
+            return;
+        } else if (messagingDb.findConvID(user1ID, user2ID).equals("Error")) {
+            out.write("Error: Conversation Corrupted");
+            out.println();
+            out.flush(); //Ensure data is sent to the client.
+            return;
+        } else if ((messagingDb.findConvID(user1ID, user2ID)).equals("No ID")) {
+            //Check if a conversation exists between users
+            conversationID = messagingDb.generateUniqueConversationID(user1ID, user2ID);
+        } else {
+            conversationID = messagingDb.findConvID(user1ID, user2ID);
+        }
+        boolean result = messagingDb.sendMessage(conversationID, user1ID, user2ID, formattedDate, message);
+
+        if (result) {
+            out.write("Message Sent!");
+            out.println();
+            out.flush(); //Ensure data is sent to the client.
+        } else {
+            out.write("Error: Message Unable to Be Sent");
+            out.println();
+            out.flush(); //Ensure data is sent to the client.
         }
     }
 
@@ -96,7 +157,28 @@ public class MyServer {
             return;
         }
         String username = parts[1];
-        boolean exist = peopleDb.checkUser(username);
+        boolean exist = peopleDb.checkUser(username); //Check that username and password are valid and applicable to eachother
+        if (exist) {
+            out.write("Welcome User!");
+            out.println();
+            out.flush(); //Ensure data is sent to the client.
+        }
+        else {
+            out.write("Please Try Again");
+            out.println();
+            out.flush(); //Ensure data is sent to the client.
+        }
+    }
+
+    //Checks that User and Password are related
+    private static void handleUserLogin(String[] parts, PrintWriter out) {
+        if (parts.length < 1) {
+            out.println("Error: Insufficient data provided.");
+            return;
+        }
+        String username = parts[1];
+        String password = parts[2];
+        boolean exist = peopleDb.userLogin(username, password); //Check that username and password are valid and applicable to eachother
         if (exist) {
             out.write("Welcome User!");
             out.println();
@@ -207,18 +289,29 @@ public class MyServer {
             out.println("Error: Insufficient data for blocking/unblocking.");
             return;
         }
-        String UserID1 = peopleDb.userNameToUserID(parts[1]);
-        String UserID2 = peopleDb.userNameToUserID(parts[2]);
+        String userID1 = peopleDb.userNameToUserID(parts[1]);
+        String userID2 = peopleDb.userNameToUserID(parts[2]);
 
         boolean result = false; //Need to convert username to UserID
         if (action == 1) { //AddFriend
-            result = peopleDb.addFriend(UserID1, UserID1, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+            if (!peopleDb.checkFriend(userID1, userID2)) { //Check Friendship doesn't already exist
+                if (!peopleDb.checkBlock(userID1, userID2)) { //Check that Block does not exist
+                    result = peopleDb.addFriend(userID1, userID2, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+                }
+            }
         } if (action == 2) { //Accept Friend
-            result = peopleDb.acceptFriend(UserID1, UserID1, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+            if (peopleDb.checkFriend(userID1, userID2)) { //Check that Friendship is registered in database -- will be
+                //saved as "Pending" -- Might be Redundant
+                result = peopleDb.acceptFriend(userID1, userID2, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+            }
         } if (action == 3) { //Decline Friend
-            result = peopleDb.deniedFriend(UserID1, UserID1);
+            if (peopleDb.checkFriend(userID1, userID2)) { //Check that Friendship has been registered and is pending
+                result = peopleDb.deniedFriend(userID1, userID2);
+            }
         } if (action == 4) { //Remove Friend
-            result = peopleDb.deniedFriend(UserID1, UserID1);
+            if (peopleDb.checkFriend(userID1, userID2)) { //Check that Friendship exists
+                result = peopleDb.deniedFriend(userID1, userID2);
+            }
         }
 
         if (result) {
