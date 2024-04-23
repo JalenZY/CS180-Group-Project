@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 //class ReceiveDataThread extends Thread {
@@ -320,6 +321,25 @@ public class MyClient {
     }
 
     private static void manageSendMessage(PrintWriter out, String username, BufferedReader stdIn, BufferedReader in) throws IOException {
+        System.out.println("List of Friends");
+        //Print out list of Friends
+        out.println("FRIENDSPRINT###" + username);
+        while (true) {
+            //Read the serialized ArrayList string from the server
+            String friendsString = in.readLine();
+            //Check if the string is null or empty
+            if (friendsString == null || friendsString.isEmpty()) {
+                //System.out.println("Error - Null");
+                break; // Exit the loop if the server has finished sending data
+            }
+            //Split the serialized ArrayList string into individual elements
+            String[] totalMessages = friendsString.split("\n");
+            //Print each element of the ArrayList
+            for (String element : totalMessages) {
+                System.out.println(element);
+            }
+        }
+
         System.out.println("Enter the username of the user you'd like to Message:");
         String targetUsername = stdIn.readLine();
         boolean validUser = false;
@@ -334,8 +354,29 @@ public class MyClient {
             }
         }
 
+
         String message = "";
         while (!message.equals("@EXIT")) { //Allows for continues sending of messages
+
+            System.out.println("User's Conversations:");
+            out.println("CONVERSATIONPRINT###" + username + "###" + targetUsername);
+            //Collect Conversation Messages and Print them Out:
+            while (true) {
+                //Read the serialized ArrayList string from the server
+                String conversationString = in.readLine();
+                //Check if the string is null or empty
+                if (conversationString == null || conversationString.isEmpty()) {
+                    //System.out.println("Error - Null");
+                    break; // Exit the loop if the server has finished sending data
+                }
+                //Split the serialized ArrayList string into individual elements
+                String[] totalMessages = conversationString.split("\n");
+                //Print each element of the ArrayList
+                for (String element : totalMessages) {
+                    System.out.println(element);
+                }
+            }
+
             System.out.println("Enter the Message you'd Like to Send!:");
             message = stdIn.readLine();
             out.println("SENDMESSAGE###" + username + "###" + targetUsername + "###" + message); //Send message information to Server
