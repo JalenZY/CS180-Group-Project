@@ -90,10 +90,56 @@ public class MyServer {
                 break;
             case "SENDMESSAGE":
                 handleSendMessage(parts, out);
+                break;
+            case "CONVERSATIONPRINT":
+                handlePrintConversation(parts, out);
+                break;
+                case "FRIENDSPRINT":
+                    handlePrintFriends(parts, out);
             default:
                 out.println("Invalid command");
                 break;
         }
+    }
+
+    private static void handlePrintFriends(String[] parts, PrintWriter out) {
+        String username= parts[1];
+        String user1ID = peopleDb.userNameToUserID(username);
+        ArrayList<String> friendsList = peopleDb.printFriends(user1ID);
+
+        StringBuilder friendsString = new StringBuilder(); //Convert ArrayList to String to Print
+        for (String item : friendsList) {
+            friendsString.append(item).append("\n");
+        }
+        out.println(friendsString);
+    }
+
+
+    private static void handlePrintConversation(String[] parts, PrintWriter out) {
+        String username= parts[1];
+        String targetUserName = parts[2];
+        String user1ID = peopleDb.userNameToUserID(username);
+        String user2ID = peopleDb.userNameToUserID(targetUserName);
+
+        String conversationID;
+        if (messagingDb.findConvID(user1ID, user2ID).equals("Error")) {
+            out.write("Error: Conversation Corrupted");
+            out.println();
+            out.flush(); //Ensure data is sent to the client.
+            return;
+        } else if ((messagingDb.findConvID(user1ID, user2ID)).equals("No ID")) {
+            //Check if a conversation does not exist between users
+            conversationID = messagingDb.generateUniqueConversationID(user1ID, user2ID);
+        } else {
+            conversationID = messagingDb.findConvID(user1ID, user2ID);
+        }
+        ArrayList<String> conversation = messagingDb.printMessages(conversationID, user1ID);
+        StringBuilder conversationString = new StringBuilder(); //Convert ArrayList to String to Print
+        for (String item : conversation) {
+            conversationString.append(item).append("\n");
+        }
+        out.println(conversationString);
+
     }
 
     private static void handleSendMessage(String[] parts, PrintWriter out) {
