@@ -1,30 +1,5 @@
 import java.io.*;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Scanner;
-
-//class ReceiveDataThread extends Thread {
-//    public final Socket socket;
-//    public String serverResponse;
-//
-//    public ReceiveDataThread(Socket socket) {
-//        super();
-//        this.socket = socket;
-//    }
-//
-//    public void run() {
-//        try {
-//            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-//            //String serverResponse;
-//            while ((serverResponse = in.readLine()) != null) {
-//                System.out.println("Server reply: " + serverResponse);
-//            }
-//
-//        } catch (Exception e) {
-//            System.out.println("Error in receiving data from server: " + e.getMessage());
-//        }
-//    }
-//}
 
 public class MyClient {
 
@@ -38,217 +13,55 @@ public class MyClient {
              PrintWriter out = new PrintWriter(socket.getOutputStream(), true); //writes to Server
              BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
              BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in))) { //Reads from User
-
-//            ReceiveDataThread rcvThread = new ReceiveDataThread(socket);
-//            rcvThread.start();
-
-//            boolean repeat = true;
-//            boolean mainMenu = true; //Boolean to initiate the main menu list
-//            String fromUserName = "";
-//            while (repeat) {
-//                //Provide Option to create new account
-//                System.out.println("Enter your username or Enter 1 to create a new Account!");
-//                fromUserName = stdIn.readLine();
-//                if (fromUserName.equals("1")) {
-//                    addUser(out, stdIn, in);
-//                    mainMenu = false; //Don't display the main menu
-//                    String serverResponse = in.readLine();
-//                    if (serverResponse.equals("User successfully added.")) {
-//                        System.out.println("Account Successfully Created, please Login!!");
-//                    } else {
-//                        System.out.println("Error, Please Try Again!");
-//                    }
-//                } else {
-//                    out.println("USERNAME###" + fromUserName);
-//                    String serverResponse = in.readLine();
-//                    if (serverResponse.equals("Welcome User!")) {
-//                        System.out.println("Welcome User!");
-//                        repeat = false;
-//                    } else if (serverResponse.equals("Please Try Again")) {
-//                        System.out.println("Please Try Again");
-//                    }
-//                }
-//            }
-
-            String[] parts = manageLogIn(stdIn, in, out).split("-");
-            String mainMenu = parts[0];
-            String fromUserName = parts[1];
-            String actionType;
-            boolean stop = false;
-            while ((!stop) || (mainMenu.equals("True"))) {
-                System.out.println("\nChoose an action:");
-                System.out.println("1. Add User");
-                System.out.println("2. Remove User");
-                System.out.println("3. Update User Profile");
-                System.out.println("4. Block User");
-                System.out.println("5. Unblock User");
-                System.out.println("6. Add Friend");
-                System.out.println("7. Accept Friendship");
-                System.out.println("8. Decline Friendship");
-                System.out.println("9. Remove Friend");
-                System.out.println("10. Send Message");
-                System.out.println("11. Switch Accounts");
-                System.out.println("0. Exit");
-                System.out.println("Enter the number of your choice:");
-
-                actionType = stdIn.readLine();
-                switch (actionType) {
-                    case "1":
-                        addUser(out, stdIn, in);
-                        break;
-//                    case "2":
-//                        removeUser(out, fromUserName);
-//                        break;
-                    case "3":
-                        updateUserProfile(out, fromUserName, stdIn, in);
-                        break;
-                    case "4":
-                        blockUnblockUser(out, fromUserName, stdIn, in, true);
-                        break;
-                    case "5":
-                        blockUnblockUser(out, fromUserName, stdIn, in, false);
-                        break;
-                    case "6":
-                        manageFriendship(out, fromUserName, stdIn, in, "ADDFRIEND");
-                        break;
-                    case "7":
-                        manageFriendship(out, fromUserName, stdIn, in,"ACCEPTFRIEND");
-                        break;
-                    case "8":
-                        manageFriendship(out, fromUserName, stdIn, in,"DENYFRIEND");
-                        break;
-                    case "9":
-                        manageFriendship(out, fromUserName, stdIn, in,"REMOVEFRIEND");
-                        break;
-                    case "10":
-                        manageSendMessage(out, fromUserName, stdIn, in);
-                        break;
-                    case "11":
-                        manageLogIn(stdIn, in, out);
-                        break;
-                    case "0":
-                        System.out.println("Exiting program.");
-                        stop = true;
-                        break;
-                    default:
-                        System.out.println("Invalid action. Please enter a valid number.");
-                        break;
-                }
-                try { //Wait for server verification to pass through
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-
-//            rcvThread.interrupt();
-
         } catch (Exception e) {
             System.out.println("Error connecting to server: " + e.getMessage());
         }
     }
-
-    private static String manageLogIn(BufferedReader stdIn, BufferedReader in, PrintWriter out) throws IOException {
-        boolean repeat = true;
-        boolean mainMenu = true; //Boolean to initiate the main menu list
-        String fromUserName = "";
-        while (repeat) {
-            //Provide Option to create new account
-            System.out.println("Enter your username or Enter 1 to create a new Account!");
-            fromUserName = stdIn.readLine();
-            if (fromUserName.equals("1")) {
-                addUser(out, stdIn, in);
-                mainMenu = false; //Don't display the main menu
-                String serverResponse = in.readLine();
-                if (serverResponse.equals("User successfully added.")) {
-                    System.out.println("Account Successfully Created, please Login!!");
-                } else {
-                    System.out.println("Error, Please Try Again!");
-                }
-            } else {
-                System.out.println("Enter your password:");
-                String password = stdIn.readLine();
-                out.println("USERLOGIN###" + fromUserName + "###" + password);
-                String serverResponse = in.readLine();
-                if (serverResponse.equals("Welcome User!")) {
-                    System.out.println("Welcome User!");
-                    repeat = false;
-                } else if (serverResponse.equals("Please Try Again")) {
-                    System.out.println("Please Try Again");
-                }
-            }
+    
+    public static boolean manageLogIn(BufferedReader in, PrintWriter out, String fromUserName, String password) throws IOException {
+        out.println("USERLOGIN###" + fromUserName + "###" + password);
+        String serverResponse = in.readLine();
+        if (serverResponse.equals("Welcome User!")) {
+            System.out.println("Welcome User!");
+            return true;
+            //repeat = false;
+        } else if (serverResponse.equals("Please Try Again")) {
+            System.out.println("Please Try Again");
+            return false;
         }
-        return String.format(mainMenu + "-" + fromUserName); //Tells if Menu needs to be displayed
+        return false;
     }
 
-    private static void addUser(PrintWriter out, BufferedReader stdIn, BufferedReader in) throws IOException {
-        System.out.println("Enter details for new user:");
-        System.out.println("Username: ");
-        String username = stdIn.readLine();
-        boolean unique = false;
-        while (!unique) { //Check for Unique Username
-            out.println("USERNAME###" + username);
-            String serverResponse = in.readLine();
-            if (serverResponse.equals("Welcome User!")) {
-                System.out.println("UserName already Exists, Please enter a New UserName!");
-                username = stdIn.readLine();
-            } else {
-                unique = true;
-            }
-        }
-        System.out.println("First Name: ");
-        String firstName = stdIn.readLine();
-        while (!isNotInteger(firstName)) { //Check that given input is not an integer
-            System.out.println("Please Enter a Non-Numeric String");
-            System.out.println("First Name: ");
-            firstName = stdIn.readLine();
-        }
-        System.out.println("Last Name: ");
-        String lastName = stdIn.readLine();
-        while (!isNotInteger(lastName)) { //Check that given input is not an integer
-            System.out.println("Please Enter a Non-Numeric String");
-            System.out.println("Last Name: ");
-            lastName = stdIn.readLine();
-        }
-        System.out.println("Password: ");
-        String password = stdIn.readLine();
-        System.out.println("Birthday (YYYY-MM-DD): ");
-        String birthday = stdIn.readLine();
-        System.out.println("Gender: ");
-        String gender = stdIn.readLine();
-        System.out.println("Hobby 1: ");
-        String hobby1 = stdIn.readLine();
-        System.out.println("Hobby 2: ");
-        String hobby2 = stdIn.readLine();
-        System.out.println("Hobby 3: ");
-        String hobby3 = stdIn.readLine();
-        System.out.println("Hobby 4: ");
-        String hobby4 = stdIn.readLine();
-        System.out.println("Home Location: ");
-        String homeLocation = stdIn.readLine();
-        while (!(isNotInteger(homeLocation))) { //Check that given input is not an integer
-            System.out.println("Please Enter a Non-Numeric String");
-            System.out.println("Home Location: ");
-            homeLocation = stdIn.readLine();
-        }
-        System.out.println("User's Home Region: ");
-        String usersHomeRegion = stdIn.readLine();
-        while (!(isNotInteger(usersHomeRegion))) { //Check that given input is not an integer
-            System.out.println("Please Enter a Non-Numeric String");
-            System.out.println("User's Home Region: ");
-            usersHomeRegion = stdIn.readLine();
-        }
-        System.out.println("College Name: ");
-        String collegeName = stdIn.readLine();
-        while (!(isNotInteger(collegeName))) { //Check that given input is not an integer
-            System.out.println("Please Enter a Non-Numeric String");
-            System.out.println("College Name: ");
-            collegeName = stdIn.readLine();
-        }
+    public static String searchForUser(PrintWriter out, BufferedReader in, String textComponent) throws IOException {
+        out.println("SEARCH###" + textComponent);
+        String serverResponse = in.readLine();
+        return (serverResponse);
+    }
 
-        out.println("ADDUSER###" + username + "###" + firstName + "###" + lastName + "###" + password + "###" +
+    public static boolean checkUser(PrintWriter out, BufferedReader in, String userName) throws IOException {
+        out.println("USERNAME###" + userName);
+        String serverResponse = in.readLine();
+        if (serverResponse.equals("Welcome User!")) {
+            return true;
+        }
+        return false;
+    }
+
+    public static void addUser(PrintWriter out, BufferedReader stdIn, BufferedReader in, String userName,
+                               String firstName, String lastName, String password, String birthday, String homeLocation,
+                               String usersHomeRegion, String collegeName, String hobby1, String hobby2, String hobby3,
+                               String hobby4, String gender) throws IOException {
+
+        out.println("ADDUSER###" + userName + "###" + firstName + "###" + lastName + "###" + password + "###" +
                 birthday + "###" + gender + "###" + hobby1 + "###" + hobby2 + "###" + hobby3 + "###" + hobby4 +
                 "###" + homeLocation + "###" + usersHomeRegion + "###" + collegeName);
+    }
+
+    public static String viewUserProfile(PrintWriter out, BufferedReader in, String userName) throws IOException {
+        out.println("PRINTUSERPROFILE###" + userName);
+        String serverResponse = in.readLine(); //Collect UserprofileData
+        return serverResponse;
+
     }
 
     public static boolean isNotInteger(String input) {
@@ -260,140 +73,123 @@ public class MyClient {
         }
     }
 
-//    private static void removeUser(PrintWriter out, String username) {
-//        System.out.println("Are you sure you want to remove your account? (Type 'yes' to confirm)");
-//        String confirmation = stdIn.readLine();
-//        if (confirmation.equalsIgnoreCase("yes")) {
-//            out.println("REMOVEUSER###" + username);
-//        }
-//    }
-
-    private static void updateUserProfile(PrintWriter out, String username, BufferedReader stdIn, BufferedReader in) throws IOException {
-        System.out.println("Enter the field you want to update:");
-        String fieldToUpdate = stdIn.readLine();
-        if (fieldToUpdate.equals("0")) {
-            return;
+    private static void removeUser(PrintWriter out, BufferedReader stdIn, String username) throws IOException {
+        System.out.println("Are you sure you want to remove your account? (Type 'yes' to confirm)");
+        String confirmation = stdIn.readLine();
+        if (confirmation.equalsIgnoreCase("yes")) {
+            out.println("REMOVEUSER###" + username);
         }
-        System.out.println("Enter the new value for " + fieldToUpdate + ":");
-        String newValue = stdIn.readLine();
+    }
+
+    public static Boolean updateUserProfile(PrintWriter out, String username, String fieldToUpdate, String newValue, BufferedReader in) throws IOException {
         out.println("UPDATEPROFILE###" + username + "###" + fieldToUpdate + "###" + newValue);
         String serverResponse = in.readLine();
         if (serverResponse.equals("User profile successfully updated.")) {
-            System.out.println("Account Successfully Updated");
-        } else {
-            if (serverResponse.equals("Error updating user profile.")) {
-                System.out.println("Error - Please Try Again");
-            }
+            return (true); //("Account Successfully Updated");
         }
+        return false;
     }
 
-    private static void blockUnblockUser(PrintWriter out, String username, BufferedReader stdIn, BufferedReader in, boolean block) throws IOException {
-        String action = block ? "BLOCKUSER" : "UNBLOCKUSER"; //if block == true, block user -- if block == false, unblock user
-        System.out.println("Enter the username of the user you want to " + (block ? "block:" : "unblock:"));
-        String targetUsername = stdIn.readLine();
-        if (targetUsername.equals(username) || targetUsername.equals("0")) {
-            if (targetUsername.equals(username)) {
-                System.out.println("Error-User Can not Block Themselves");
+    public static String checkUserAbleUnBlock(PrintWriter out, BufferedReader in, String fromUser, String userName) throws IOException {
+        out.println("CHECKBLOCK###" + fromUser + "###" + userName);
+        String blocked = in.readLine(); //Returns true if users blocked
+        if (blocked.equals("true")) {
+            out.println("CHECKSPECIFICBLOCK###" + fromUser + "###" + userName);
+            String canUnblock = in.readLine();
+            if (canUnblock.equals("true")) {
+                return ("UnblockButton"); //Display UserUnblock Button
+            }
+            return ("NoButton");
+        }
+        return ("BlockButton");
+    }
+
+    public static String checkUserFriendActions(PrintWriter out, BufferedReader in, String fromUser, String userName) throws IOException {
+        String existingFriendship = "false";
+        String initiated = "false";
+        out.println("CHECKFRIEND###" + fromUser + "###" + userName);
+        String friendship = in.readLine(); //Returns true if users have Friendship
+        if (friendship.equals("true")) {
+            out.println("CHECKACTIVEFRIEND###" + fromUser + "###" + userName);
+            existingFriendship = in.readLine(); //Returns true if users have Active Friendship
+            if (existingFriendship.equals("false")) { //Friendship is Pending
+                out.println("CHECKSPECIFICFRIEND###" + fromUser + "###" + userName);
+                initiated = in.readLine(); //Returns true if users initiated Friendship
+                if (initiated.equals("false")) {
+                    return ("BothOptions");
+                } else {
+                    return ("RemoveFriend");
+                }
             } else {
-                return;
+                return ("RemoveFriend");
             }
         } else {
-            out.println(action + "###" + username + "###" + targetUsername);
-            String serverResponse = in.readLine();
-            if (serverResponse.equals("User successfully blocked.")) {
-                System.out.println("User successfully blocked.");
-            } else if (serverResponse.equals("User successfully unblocked.")) {
-                System.out.println("User successfully unblocked.");
-            } else if (serverResponse.equals("Error blocking user.")) {
-                System.out.println("Error blocking user, Please Try Again");
-            } else if (serverResponse.equals("Error unblocking user.")) {
-                System.out.println("Error unblocking user, Please Try Again");
-            } else if (serverResponse.equals("Error: Insufficient data for blocking/unblocking.")) {
-                System.out.println("Error: Insufficient data for blocking/unblocking, Please Try Again");
-            }
+            return ("RemoveFriend");
         }
     }
 
-    private static void manageFriendship(PrintWriter out, String username, BufferedReader stdIn, BufferedReader in, String action) throws IOException {
-        System.out.println("Enter the username of the user:");
-        String targetUsername = stdIn.readLine();
+    public static String blockUnblockUser(PrintWriter out, String username, String targetUsername, BufferedReader in, boolean block) throws IOException {
+        String action = block ? "BLOCKUSER" : "UNBLOCKUSER"; //if block == true, block user -- if block == false, unblock user
         out.println(action + "###" + username + "###" + targetUsername);
+        String serverResponse = in.readLine();
+        if (serverResponse.equals("User successfully blocked.")) {
+            return ("User successfully blocked.");
+        } else if (serverResponse.equals("User successfully unblocked.")) {
+            return ("User successfully unblocked.");
+        } else if (serverResponse.equals("Error blocking user.")) {
+            return ("Error blocking user, Please Try Again");
+        } else if (serverResponse.equals("Error unblocking user.")) {
+            return ("Error unblocking user, Please Try Again");
+        } else if (serverResponse.equals("Error: Insufficient data for blocking/unblocking.")) {
+            return ("Error: Insufficient data for blocking/unblocking, Please Try Again");
+        }
+        return ("System Error - Unable to Complete Action");
     }
 
-    private static void manageSendMessage(PrintWriter out, String username, BufferedReader stdIn, BufferedReader in) throws IOException {
-        System.out.println("List of Friends");
-        //Print out list of Friends
-        out.println("FRIENDSPRINT###" + username);
-        while (true) {
-            //Read the serialized ArrayList string from the server
-            String friendsString = in.readLine();
-            //Check if the string is null or empty
-            if (friendsString == null || friendsString.isEmpty()) {
-                //System.out.println("Error - Null");
-                break; // Exit the loop if the server has finished sending data
-            }
-            //Split the serialized ArrayList string into individual elements
-            String[] totalMessages = friendsString.split("\n");
-            //Print each element of the ArrayList
-            for (String element : totalMessages) {
-                System.out.println(element);
-            }
-        }
+    public static String viewFriends(BufferedReader in, PrintWriter out, String userName) throws IOException {
+        out.println("FRIENDSPRINT###" + userName);
+        String friendsString = "";
+        friendsString = in.readLine();
+        return (friendsString);
+    }
 
-        System.out.println("Enter the username of the user you'd like to Message:");
-        String targetUsername = stdIn.readLine();
+    public static String manageFriendship(PrintWriter out, String username, BufferedReader in, String action, String targetUsername) throws IOException {
+        out.println(action + "###" + username + "###" + targetUsername);
+        String status = in.readLine();
+        return (status);
+    }
+
+    public static String managePrintConversation(PrintWriter out, BufferedReader in, String userName, String targetUsername) throws IOException {
+        out.println("CONVERSATIONPRINT###" + userName + "###" + targetUsername);
+        String[] totalMessages = null;
+        String conversationString = in.readLine();
+        return (conversationString);
+    }
+
+    public static String manageSendMessage(PrintWriter out, BufferedReader in, String username, String targetUsername, String message) throws IOException {
         boolean validUser = false;
         while (!validUser) { //Check that Username entered is valid
             out.println("USERNAME###" + targetUsername);
             String serverResponse = in.readLine();
             if (serverResponse.equals("Please Try Again")) {
-                System.out.println("Please Enter the Valid UserName of the User You Want to Message:");
-                targetUsername = stdIn.readLine();
+                return ("Please Enter the Valid UserName of the User You Want to Message:");
             } else if (serverResponse.equals("Welcome User!"))  {
                 validUser = true;
             }
         }
-
-
-        String message = "";
-        while (!message.equals("@EXIT")) { //Allows for continues sending of messages
-
-            System.out.println("User's Conversations:");
-            out.println("CONVERSATIONPRINT###" + username + "###" + targetUsername);
-            //Collect Conversation Messages and Print them Out:
-            while (true) {
-                //Read the serialized ArrayList string from the server
-                String conversationString = in.readLine();
-                //Check if the string is null or empty
-                if (conversationString == null || conversationString.isEmpty()) {
-                    //System.out.println("Error - Null");
-                    break; // Exit the loop if the server has finished sending data
-                }
-                //Split the serialized ArrayList string into individual elements
-                String[] totalMessages = conversationString.split("\n");
-                //Print each element of the ArrayList
-                for (String element : totalMessages) {
-                    System.out.println(element);
-                }
-            }
-
-            System.out.println("Enter the Message you'd Like to Send!:");
-            message = stdIn.readLine();
-            out.println("SENDMESSAGE###" + username + "###" + targetUsername + "###" + message); //Send message information to Server
-            String serverResponse = in.readLine();
-            if (serverResponse.equals("Error: Recipient UserName does Not Exist")) {
-                System.out.println("Error: Recipient UserName does Not Exist");
-            } else if (serverResponse.equals("Error: User Block Exists")) {
-                System.out.println("Error, Block Exists Between Users");
-                return;
-            } else if (serverResponse.equals("Error: Friendship Does Not Exist")) {
-                System.out.println("Error, User is not a Friend");
-                return;
-            } else if (serverResponse.equals("Error: Conversation Corrupted")) {
-                System.out.println("Error, Conversation Might Be Corrupted, please Try again");
-            } else if (serverResponse.equals("Error: Insufficient data provided.")) {
-                System.out.println("Error: Insufficient data, Please Try Again");
-            }
+        out.println("SENDMESSAGE###" + username + "###" + targetUsername + "###" + message); //Send message information to Server
+        String serverResponse = in.readLine();
+        if (serverResponse.equals("Error: Recipient UserName does Not Exist")) {
+            return ("Error: Recipient UserName does Not Exist");
+        } else if (serverResponse.equals("Error: User Block Exists")) {
+            return ("Error, Block Exists Between Users");
+        } else if (serverResponse.equals("Error: Friendship Does Not Exist")) {
+            return ("Error, User is not a Friend");
+        } else if (serverResponse.equals("Error: Conversation Corrupted")) {
+            return ("Error, Conversation Might Be Corrupted, please Try again");
+        } else if (serverResponse.equals("Error: Insufficient data provided.")) {
+            return ("Error: Insufficient data, Please Try Again");
         }
+        return ("Message Sent!");
     }
 }
