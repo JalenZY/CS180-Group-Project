@@ -1,0 +1,53 @@
+import javax.swing.*;
+import java.awt.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.PrintWriter;
+/**
+ * DisplayChatWindow.java
+ *
+ * GUI Class used to display conversation between users
+ *
+ * @author ThomasRalston - Juan Rodriguez L105
+ * @version April 26, 2024
+ */
+public class DisplayChatWindow extends JFrame {
+    private JTextArea textArea;
+   
+    public DisplayChatWindow(PrintWriter out, BufferedReader in, String fromUser, String user2) {
+        setTitle("Chat Between " + fromUser + " And " + user2);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setSize(300, 200);
+        setLayout(new BorderLayout());
+
+        // Create a JTextArea to display the array elements
+        textArea = new JTextArea(10, 20);
+        textArea.setEditable(false);
+
+        // Create a JScrollPane to add scrolling capability to the JTextArea
+        JScrollPane scrollPane = new JScrollPane(textArea);
+
+        // Add the JScrollPane to the frame
+        add(scrollPane, BorderLayout.CENTER);
+
+        //Get Name List from Client Class
+        String conversationString = "";
+        String[] conversation = null;
+        try {
+            conversationString = MyClient.managePrintConversation(out, in, fromUser, user2);
+            conversation = conversationString.split("----");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        if (conversation == null) {
+            conversation = new String[]{"No Conversation History"};
+        }
+
+        // Populate the JTextArea with the array elements
+        for (String element : conversation) {
+            textArea.append(element + "\n");
+        }
+
+        setVisible(true);
+    }
+}
