@@ -94,12 +94,93 @@ public class MyServer {
             case "CONVERSATIONPRINT":
                 handlePrintConversation(parts, out);
                 break;
-                case "FRIENDSPRINT":
-                    handlePrintFriends(parts, out);
+            case "FRIENDSPRINT":
+                handlePrintFriends(parts, out);
+                break;
+            case "PRINTUSERPROFILE":
+                handlePrintUserProfile(parts, out);
+                break;
+            case "SEARCH":
+                handleSearchForUser(parts, out);
+                break;
+            case "CHECKSPECIFICBLOCK":
+                handleCheckSpecificBlock(parts, out);
+                break;
+            case "CHECKBLOCK":
+                handleCheckBlock(parts, out);
+                break;
+            case "CHECKFRIENDSHIP":
+                handleCheckFriendship(parts, out);
+                break;
+            case "CHECKSPECIFICFRIENDSHIP":
+                handleCheckSpecificFriendship(parts, out);
+                break;
+            case "CHECKACTIVEFRIENDSHIP":
+                handleCheckActiveFriendship(parts, out);
+                break;
             default:
                 out.println("Invalid command");
                 break;
         }
+    }
+
+    private static void handleCheckActiveFriendship(String[] parts, PrintWriter out) {
+        String fromUser = parts[1];
+        String user2 = parts[2];
+        boolean existingFriendship = peopleDb.checkExistingFriend(fromUser, user2);
+        out.println(existingFriendship); //True for Friendship
+    }
+
+    private static void handleCheckFriendship(String[] parts, PrintWriter out) {
+        String fromUser = parts[1];
+        String user2 = parts[2];
+        boolean friendship = peopleDb.checkFriend(fromUser, user2);
+        out.println(friendship); //True for Friendship
+    }
+
+    private static void handleCheckSpecificFriendship(String[] parts, PrintWriter out) {
+        String fromUser = parts[1];
+        String user2 = parts[2];
+        boolean initiated = peopleDb.checkSpecificFriend(fromUser, user2);
+        out.println(initiated); //True for Main User Initiating Friendship - Don't Display Option
+    }
+
+
+    //True Means Users Are Blocked -> check Specific Block
+    private static void handleCheckBlock(String[] parts, PrintWriter out) {
+        String fromUser = parts[1];
+        String user2 = parts[2];
+        String fromUserID = peopleDb.userNameToUserID(fromUser);
+        String user2ID = peopleDb.userNameToUserID(user2);
+        boolean blocked = peopleDb.checkBlock(fromUserID, user2ID);
+        out.println(blocked);
+    }
+
+    //Method to see if main user is offered unblock or block button, or neither
+    //canUnblock -> unblock button
+    //CanUnblock -> false -> no Buttons
+    private static void handleCheckSpecificBlock(String[] parts, PrintWriter out) {
+        String fromUser = parts[1];
+        String user2 = parts[2];
+        String fromUserID = peopleDb.userNameToUserID(fromUser);
+        String user2ID = peopleDb.userNameToUserID(user2);
+        boolean canUnblock = peopleDb.checkSpecificBlock(fromUserID, user2ID);
+        out.println(canUnblock);
+    }
+
+    private static void handleSearchForUser(String[] parts, PrintWriter out) {
+        String textComponent = parts[1];
+        String results = peopleDb.searchForUser(textComponent);
+        System.out.println(results);
+        out.println(results); //Send Data to Client
+    }
+
+    private static void handlePrintUserProfile(String[] parts, PrintWriter out) {
+        String username= parts[1];
+        String user1ID = peopleDb.userNameToUserID(username);
+        UserProfile user = new UserProfile(user1ID);
+        String userProfileData = user.toString(); //Get All User Data
+        out.println(userProfileData); //Send Data to Client
     }
 
     private static void handlePrintFriends(String[] parts, PrintWriter out) {
@@ -108,14 +189,21 @@ public class MyServer {
         ArrayList<String> friendsList = peopleDb.printFriends(user1ID);
 
         StringBuilder friendsString = new StringBuilder(); //Convert ArrayList to String to Print
-        for (String item : friendsList) {
-            friendsString.append(item).append("\n");
+//        for (String item : friendsList) {
+//            friendsString.append(item).append("----");
+//        }
+        for (int i = 0; i < friendsList.size(); i++) {
+            friendsString.append(friendsList.get(i));
+            if (i < friendsList.size() - 1) {
+                friendsString.append("----");
+            }
         }
         out.println(friendsString);
+        System.out.println(friendsString);
     }
 
 
-    private static void handlePrintConversation(String[] parts, PrintWriter out) {
+    private static ArrayList<String> handlePrintConversation(String[] parts, PrintWriter out) {
         String username= parts[1];
         String targetUserName = parts[2];
         String user1ID = peopleDb.userNameToUserID(username);
@@ -126,7 +214,7 @@ public class MyServer {
             out.write("Error: Conversation Corrupted");
             out.println();
             out.flush(); //Ensure data is sent to the client.
-            return;
+            return (null);
         } else if ((messagingDb.findConvID(user1ID, user2ID)).equals("No ID")) {
             //Check if a conversation does not exist between users
             conversationID = messagingDb.generateUniqueConversationID(user1ID, user2ID);
@@ -136,10 +224,10 @@ public class MyServer {
         ArrayList<String> conversation = messagingDb.printMessages(conversationID, user1ID);
         StringBuilder conversationString = new StringBuilder(); //Convert ArrayList to String to Print
         for (String item : conversation) {
-            conversationString.append(item).append("\n");
+            conversationString.append(item).append("----");
         }
         out.println(conversationString);
-
+        return (conversation);
     }
 
     private static void handleSendMessage(String[] parts, PrintWriter out) {
@@ -372,7 +460,7 @@ public class MyServer {
             }
         } else {
             if (action == 1) {
-                out.println("Error Adding Friend");
+                out.println("Error Adding Friend, Friendship May Already Exist");
             } if (action == 2) {
                 out.println("Error Accepting Friendship");
             } if (action == 3) {
