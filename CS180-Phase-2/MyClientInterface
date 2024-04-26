@@ -1,0 +1,45 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.PrintWriter;
+/**
+ * MyClientInterface.java
+ *
+ * Lists all the methods and their parameters used by MyClient.java
+ *
+ * @author ThomasRalton L105
+ * @version April 26, 2024
+ */
+public interface MyClientInterface {
+    boolean manageLogIn(BufferedReader in, PrintWriter out, String fromUserName, String password) throws IOException;
+
+    String searchForUser(PrintWriter out, BufferedReader in, String textComponent) throws IOException;
+
+    boolean checkUser(PrintWriter out, BufferedReader in, String userName) throws IOException;
+
+    void addUser(PrintWriter out, BufferedReader stdIn, BufferedReader in, String userName,
+                 String firstName, String lastName, String password, String birthday, String homeLocation,
+                 String usersHomeRegion, String collegeName, String hobby1, String hobby2, String hobby3,
+                 String hobby4, String gender) throws IOException;
+
+    String viewUserProfile(PrintWriter out, BufferedReader in, String userName) throws IOException;
+
+    boolean isNotInteger(String input);
+
+    void removeUser(PrintWriter out, BufferedReader stdIn, String username) throws IOException;
+
+    Boolean updateUserProfile(PrintWriter out, String username, String fieldToUpdate, String newValue, BufferedReader in) throws IOException;
+
+    String checkUserAbleUnBlock(PrintWriter out, BufferedReader in, String fromUser, String userName) throws IOException;
+
+    String checkUserFriendActions(PrintWriter out, BufferedReader in, String fromUser, String userName) throws IOException;
+
+    String blockUnblockUser(PrintWriter out, String username, String targetUsername, BufferedReader in, boolean block) throws IOException;
+
+    String viewFriends(BufferedReader in, PrintWriter out, String userName) throws IOException;
+
+    String manageFriendship(PrintWriter out, String username, BufferedReader in, String action, String targetUsername) throws IOException;
+
+    String managePrintConversation(PrintWriter out, BufferedReader in, String userName, String targetUsername) throws IOException;
+
+    String manageSendMessage(PrintWriter out, BufferedReader in, String username, String targetUsername, String message) throws IOException;
+}
