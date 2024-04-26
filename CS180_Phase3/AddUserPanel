@@ -1,0 +1,167 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
+/**
+ * AddUserPanel.java
+ *
+ * GUI Class used to display components for user to create new profile page
+ * 
+ * @author ThomasRalston L105
+ * @version April 26, 2024
+ */
+public class AddUserPanel extends JFrame {
+    public BufferedReader stdIn;
+    public BufferedReader in;
+    public PrintWriter out;
+    public JPanel panel;
+
+    public AddUserPanel(BufferedReader stdIn, BufferedReader in, PrintWriter out) {
+        this.stdIn = stdIn;
+        this.in = in;
+        this.out = out;
+        this.panel = new JPanel(); // Initialize panel
+        this.panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS)); // Set BoxLayout for the panel
+        this.setPreferredSize(new Dimension(400, 600));
+
+
+        JLabel label = new JLabel("New User Profile Page"); //Pages Label
+
+        //Create/Label/Add Text Boxes
+        JLabel userNameLabel = new JLabel("UserName"); //Label text
+        JTextField txtUserName = new JTextField(20); //Create a text field
+        panel.add(userNameLabel); //Add the label and text field to the panel
+        panel.add(txtUserName);
+
+        JLabel userFirstNameLabel = new JLabel("First Name"); //Label text
+        JTextField txtUserFirstName = new JTextField(20); //Create a text field
+        panel.add(userFirstNameLabel); //Add the label and text field to the panel
+        panel.add(txtUserFirstName);
+
+        JLabel userLastNameLabel = new JLabel("Last Name"); //Label text
+        JTextField txtUserLastName = new JTextField(20); //Create a text field
+        panel.add(userLastNameLabel); //Add the label and text field to the panel
+        panel.add(txtUserLastName);
+
+        JLabel userPasswordLabel = new JLabel("Password"); //Label text
+        JTextField txtUserPassword = new JTextField(20); //Create a text field
+        panel.add(userPasswordLabel); //Add the label and text field to the panel
+        panel.add(txtUserPassword);
+
+        JLabel userBirthdayLabel = new JLabel("Birthday: (mm//dd//yyyy)"); //Label text
+        JTextField txtUserBirthday = new JTextField(20); //Create a text field
+        panel.add(userBirthdayLabel); //Add the label and text field to the panel
+        panel.add(txtUserBirthday);
+
+        JLabel userHomeLocLabel = new JLabel("Home Location"); //Label text
+        JTextField txtUserHomeLoc = new JTextField(20); //Create a text field
+        panel.add(userHomeLocLabel); //Add the label and text field to the panel
+        panel.add(txtUserHomeLoc);
+
+        JLabel userHomeCountryLabel = new JLabel("Home Country"); //Label text
+        JTextField txtUserHomeCountry = new JTextField(20); //Create a text field
+        panel.add(userHomeCountryLabel); //Add the label and text field to the panel
+        panel.add(txtUserHomeCountry);
+
+        JLabel userCollegeLabel = new JLabel("College Name"); //Label text
+        JTextField txtUserCollege = new JTextField(20); //Create a text field
+        panel.add(userCollegeLabel); //Add the label and text field to the panel
+        panel.add(txtUserCollege);
+
+        //Create Drop Down Boxes
+        //Hobby Boxes
+        String[] hobbyOptions = {
+                "Reading", "Writing", "Painting", "Drawing", "Gardening", "Cooking", "Baking", "Photography", "Hiking",
+                "Swimming", "Cycling", "Playing an instrument", "Dancing", "Watching movies",
+                "Video Games", "Traveling", "Football", "Soccer", "Legos", "Building Models"};
+        JLabel hobby1Label = new JLabel("Hobby #1");
+        JComboBox<String> hobby1Box = new JComboBox<>(hobbyOptions);
+        panel.add(hobby1Label);
+        panel.add(hobby1Box);
+
+        JLabel hobby2Label = new JLabel("Hobby #2");
+        JComboBox<String> hobby2Box = new JComboBox<>(hobbyOptions);
+        panel.add(hobby2Label);
+        panel.add(hobby2Box);
+
+        JLabel hobby3Label = new JLabel("Hobby #3");
+        JComboBox<String> hobby3Box = new JComboBox<>(hobbyOptions);
+        panel.add(hobby3Label);
+        panel.add(hobby3Box);
+
+        JLabel hobby4Label = new JLabel("Hobby #4");
+        JComboBox<String> hobby4Box = new JComboBox<>(hobbyOptions);
+        panel.add(hobby4Label);
+        panel.add(hobby4Box);
+
+        //Gender Drop Down List
+        JLabel genderLabel = new JLabel("Gender:");
+        String[] genderOptions = {"Male", "Female", "Other"};
+        JComboBox<String> genderBox = new JComboBox<>(genderOptions);
+        panel.add(genderLabel);
+        panel.add(genderBox);
+
+        //Create Submit Button
+        JButton btnSubmit = new JButton("Submit");
+        panel.add(btnSubmit);
+        btnSubmit.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent a) {
+                String fromUser = txtUserName.getText();
+                String firstName = txtUserFirstName.getText();
+                String lastName = txtUserLastName.getText();
+                String password = txtUserPassword.getText();
+                String birthday = txtUserBirthday.getText();
+                String homeLocation = txtUserHomeLoc.getText();
+                String homeCountry = txtUserHomeCountry.getText();
+                String college = txtUserCollege.getText();
+                String hobby1 = (String) hobby1Box.getSelectedItem();
+                String hobby2 = (String) hobby2Box.getSelectedItem();
+                String hobby3 = (String) hobby3Box.getSelectedItem();
+                String hobby4 = (String) hobby4Box.getSelectedItem();
+                String gender = (String) genderBox.getSelectedItem();
+
+                try {
+                    boolean userNameStat = MyClient.checkUser(out, in, fromUser);
+                    if (!userNameStat) {
+                        //Check first and last name aren't number .... Mehhh
+                        boolean firstNameStat = MyClient.isNotInteger(firstName);
+                        boolean lastNameStat = MyClient.isNotInteger(String.valueOf(lastName));
+                        if (firstNameStat && lastNameStat) {
+                            MyClient.addUser(out, stdIn, in, fromUser, firstName, lastName,
+                                    password, birthday, homeLocation, homeCountry, college, hobby1, hobby2, hobby3,
+                                    hobby4, gender);
+                            JOptionPane.showMessageDialog(AddUserPanel.this,
+                                    "Creation Successful! Please Login With your New Account Info!");
+                            dispose();
+                            //closePanel(addUser());
+                        } else {
+                            JOptionPane.showMessageDialog(AddUserPanel.this, "Please Enter a Non-Numeric Name");
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(AddUserPanel.this,
+                                "User Name Already Exists, Please Enter a New UserName");
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+
+        // Add panel to a JScrollPane
+        JScrollPane scrollPane = new JScrollPane(panel);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+
+        this.getContentPane().add(scrollPane);
+
+        // Pack the frame and make it visible
+        this.pack();
+        this.setLocationRelativeTo(null);
+        this.setVisible(true);
+    }
+
+
+}
