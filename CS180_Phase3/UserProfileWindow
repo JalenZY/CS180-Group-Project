@@ -1,0 +1,186 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.PrintWriter;
+
+class UserProfileWindow extends JFrame {
+    public String fromUser;
+    public String callerClass;
+    /**
+     * UserProfileWindow.java
+     *
+     * GUI Class used to display user profile information, this displays the non-sensitive
+     * Profile information. Along with the information, certain buttons will be displayed depending
+     * on weather a user can block/Unblock/Add/Remove/Accept/Decline a user/Friendship
+     *
+     * @author ThomasRalston - Juan Rodriguez L105
+     * @version April 26, 2024
+     */
+    public UserProfileWindow(BufferedReader in, PrintWriter out, String userName, String callerClass, String fromUser) throws IOException {
+        this.fromUser = fromUser;
+        this.callerClass = callerClass;
+        setTitle("User Profile Page For: " + userName);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setSize(500, 400);
+        setLayout(new BorderLayout());
+
+        String userData = "";
+        try {
+            userData = MyClient.viewUserProfile(out, in, userName);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+
+        String[] parts = userData.split(","); //Split given data
+        String userID = parts[0];
+        //String userName = parts[1];
+        String userFirstName = parts[2];
+        String userLastName = parts[3];
+        //String password = parts[4];
+        String birthday = parts[5];
+        String gender = parts[6];
+        String hobby1 = parts[7];
+        String hobby2 = parts[8];
+        String hobby3 = parts[9];
+        String hobby4 = parts[10];
+        String homeLocation = parts[11];
+        String usersRegion = parts[12];
+        String collegeName = parts[13];
+
+        //Create Display Boxes to display user profile information
+        JPanel contentPane = new JPanel();
+        contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
+
+        addLabelAndText(contentPane, "UserName:", userName);
+        addLabelAndText(contentPane, "User's Name:", userFirstName + " " + userLastName);
+        addLabelAndText(contentPane, "User's Birthday:", birthday);
+        addLabelAndText(contentPane, "User's Gender:", gender);
+        addLabelAndText(contentPane, "Hobby #1:", hobby1);
+        addLabelAndText(contentPane, "Hobby #2:", hobby2);
+        addLabelAndText(contentPane, "Hobby #3:", hobby3);
+        addLabelAndText(contentPane, "Hobby #4:", hobby4);
+        addLabelAndText(contentPane, "User's Home Location:", homeLocation);
+        addLabelAndText(contentPane, "User's Home Country:", usersRegion);
+        addLabelAndText(contentPane, "User's College:", collegeName);
+
+
+        if (callerClass.equals("SearchClass")) {
+            JButton btnAddFriend = new JButton("Add Friend");
+            btnAddFriend.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    try {
+                        String actionStatus = MyClient.manageFriendship(out, fromUser, in, "ADDFRIEND", userName);
+                        JOptionPane.showMessageDialog(UserProfileWindow.this, actionStatus);
+                    } catch (IOException ex) {
+                        JOptionPane.showMessageDialog(UserProfileWindow.this, "Error occurred while managing friendship: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                        ex.printStackTrace();
+                    }
+                }
+            });
+            contentPane.add(btnAddFriend);
+        }
+
+        if (callerClass.equals("FriendsClass")) {
+            System.out.println("FriendsClass");
+            String blockButtonStatus = MyClient.checkUserAbleUnBlock(out, in, fromUser, userName);
+            if (blockButtonStatus.equals("UnblockButton")) {
+                JButton btnUnBlockUser = new JButton("Unblock User");
+                System.out.println("unBlock");
+                btnUnBlockUser.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        try {
+                            String actionStatus = MyClient.blockUnblockUser(out, fromUser, userName, in, false);
+                            JOptionPane.showMessageDialog(UserProfileWindow.this, actionStatus);
+                        } catch (IOException ex) {
+                            JOptionPane.showMessageDialog(UserProfileWindow.this, "Error occurred while managing friendship: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                            ex.printStackTrace();
+                        }
+                    }
+                });
+                contentPane.add(btnUnBlockUser);
+            } else if (blockButtonStatus.equals("BlockButton")) {
+                JButton btnBlockUser = new JButton("Block User");
+                System.out.println("Block");
+                btnBlockUser.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        try {
+                            String actionStatus = MyClient.blockUnblockUser(out, fromUser, userName, in, true);
+                            JOptionPane.showMessageDialog(UserProfileWindow.this, actionStatus);
+                        } catch (IOException ex) {
+                            JOptionPane.showMessageDialog(UserProfileWindow.this, "Error occurred while managing friendship: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                            ex.printStackTrace();
+                        }
+                    }
+                });
+                contentPane.add(btnBlockUser);
+            }
+
+            String friendshipButtons = MyClient.checkUserFriendActions(out, in, fromUser, userName);
+            if (friendshipButtons.equals("BothOptions")) {
+                JButton btnAcceptFriend = new JButton("Accept Friend");
+                System.out.println("Accept");
+                btnAcceptFriend.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        try {
+                            String actionStatus = MyClient.manageFriendship(out, fromUser, in, "ACCEPTFRIEND", userName);
+                            JOptionPane.showMessageDialog(UserProfileWindow.this, actionStatus);
+                        } catch (IOException ex) {
+                            JOptionPane.showMessageDialog(UserProfileWindow.this, "Error occurred while managing friendship: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                            ex.printStackTrace();
+                        }
+                    }
+                });
+                contentPane.add(btnAcceptFriend);
+
+                JButton btnDeclineFriend = new JButton("Decline Friend");
+                System.out.println("Decline");
+                btnDeclineFriend.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        try {
+                            String actionStatus = MyClient.manageFriendship(out, fromUser, in, "DENYFRIEND", userName);
+                            JOptionPane.showMessageDialog(UserProfileWindow.this, actionStatus);
+                        } catch (IOException ex) {
+                            JOptionPane.showMessageDialog(UserProfileWindow.this, "Error occurred while managing friendship: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                            ex.printStackTrace();
+                        }
+                    }
+                });
+                contentPane.add(btnDeclineFriend);
+            } else if (friendshipButtons.equals("RemoveFriend")) {
+                JButton btnRemoveFriend = new JButton("Remove Friend");
+                System.out.println("Remove");
+                btnRemoveFriend.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        try {
+                            String actionStatus = MyClient.manageFriendship(out, fromUser, in, "REMOVEFRIEND", userName);
+                            JOptionPane.showMessageDialog(UserProfileWindow.this, actionStatus);
+                        } catch (IOException ex) {
+                            JOptionPane.showMessageDialog(UserProfileWindow.this, "Error occurred while managing friendship: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                            ex.printStackTrace();
+                        }
+                    }
+                });
+                contentPane.add(btnRemoveFriend);
+            }
+        }
+
+        JScrollPane scrollPane = new JScrollPane(contentPane); // Add scroll pane if needed
+        setContentPane(scrollPane);
+        setVisible(true);
+    }
+
+    private void addLabelAndText(Container container, String labelText, String text) {
+        JLabel label = new JLabel(labelText);
+        JTextArea textArea = new JTextArea(text);
+        textArea.setEditable(false);
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(label, BorderLayout.WEST);
+        panel.add(new JScrollPane(textArea), BorderLayout.CENTER);
+        container.add(panel);
+    }
+
+}
