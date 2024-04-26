@@ -1,1 +1,154 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.PrintWriter;
+/**
+ * MainUserProfileWindow.java
+ *
+ * GUI that displays the userProfile information of the Main User - also allows for direct
+ * and instant updating and editing of user's information
+ *
+ * @author ThomasRalston L105
+ * @version April 26, 2024
+ */
+public class MainUserProfileWindow extends JFrame {
+    public String userName;
+    private JComboBox<String> dropdown;
+    BufferedReader in;
+    String[] hobbyOptions = {
+            "Reading", "Writing", "Painting", "Drawing", "Gardening", "Cooking", "Baking", "Photography", "Hiking",
+            "Swimming", "Cycling", "Playing an instrument", "Dancing", "Watching movies",
+            "Video Games", "Traveling", "Football", "Soccer", "Legos", "Building Models"};
+    String[] genderOptions = {"Male", "Female", "Other"};
 
+
+    public MainUserProfileWindow(BufferedReader in, PrintWriter out, String fromuser) {
+        this.in = in;
+        this.userName = fromuser;
+        setTitle("User Profile Page For: " + userName);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setSize(500, 400);
+        setLayout(new BorderLayout());
+
+        String userData;
+        try {
+            userData = MyClient.viewUserProfile(out, in, userName);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+
+        String[] parts = userData.split(","); //Split given data
+        String userID = parts[0];
+        userName = parts[1];
+        String userFirstName = parts[2];
+        String userLastName = parts[3];
+        String password = parts[4];
+        String birthday = parts[5];
+        String gender = parts[6];
+        String hobby1 = parts[7];
+        String hobby2 = parts[8];
+        String hobby3 = parts[9];
+        String hobby4 = parts[10];
+        String homeLocation = parts[11];
+        String usersRegion = parts[12];
+        String collegeName = parts[13];
+
+        //Create Display Boxes to display user profile information
+        JPanel contentPane = new JPanel();
+        contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
+
+        addLabelAndText(contentPane, "User Name:", userName, "userName", out, false);
+        addLabelAndText(contentPane, "Password:", password, "Password", out, true);
+        addLabelAndText(contentPane, "First Name:", userFirstName, "userFirstName", out, true);
+        addLabelAndText(contentPane, "First Name:", userLastName, "userLastName", out, true);
+        addLabelAndText(contentPane, "User's Birthday:", birthday, "birthday", out, true);
+        addLabelAndDropdown(contentPane, "Hobby #1:", hobbyOptions, hobby1, out, "hobby1", in);
+        addLabelAndDropdown(contentPane, "Hobby #2:", hobbyOptions, hobby2, out, "hobby2", in);
+        addLabelAndDropdown(contentPane, "Hobby #3:", hobbyOptions, hobby3, out, "hobby3", in);
+        addLabelAndDropdown(contentPane, "Hobby #4:", hobbyOptions, hobby4, out, "hobby4", in);
+        addLabelAndDropdown(contentPane, "Gender:", genderOptions, gender, out, "gender", in);
+        addLabelAndText(contentPane, "User's Home Location:", homeLocation, "homeLocation", out, true);
+        addLabelAndText(contentPane, "User's Home Country:", usersRegion, "usersRegion", out, true);
+        addLabelAndText(contentPane, "User's College:", collegeName, "collegeName", out, true);
+
+        setContentPane(contentPane);
+        setVisible(true);
+
+    }
+
+    private void addLabelAndDropdown(Container container, String labelText, String[] options, String selectedOption, PrintWriter out, String fieldName, BufferedReader in) {
+        JLabel label = new JLabel(labelText);
+        JComboBox<String> dropdown = new JComboBox<>(options);
+        dropdown.setSelectedItem(selectedOption);
+
+        JButton btnUpdate = new JButton("Update");
+        btnUpdate.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Get the selected item from the dropdown
+                String updatedOption = (String) dropdown.getSelectedItem();
+                // Call specific function for updating the field
+                boolean status = false;
+                try {
+                    status = MyClient.updateUserProfile(out, userName, fieldName, updatedOption, in);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+                if (status) {
+                    JOptionPane.showMessageDialog(MainUserProfileWindow.this, labelText + " Successfully Updated!");
+                } else {
+                    JOptionPane.showMessageDialog(MainUserProfileWindow.this, "Error, Failed to Update " + labelText + ", Please Try Again");
+                }
+            }
+        });
+
+        // Create a panel to hold the label, dropdown, and update button
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(label, BorderLayout.WEST);
+        panel.add(dropdown, BorderLayout.CENTER);
+        panel.add(btnUpdate, BorderLayout.EAST);
+
+        container.add(panel);
+    }
+
+    private void addLabelAndText(Container container, String labelText, String text, String fieldName, PrintWriter out, boolean editable) {
+        JLabel label = new JLabel(labelText);
+        JTextArea textArea = new JTextArea(text);
+        textArea.setEditable(editable); // Set editability based on the 'editable' parameter
+        //Create inner panel to hold label, text area, and update button
+        JPanel innerPanel = new JPanel(new BorderLayout());
+        //Add label and text area to the inner panel
+        innerPanel.add(label, BorderLayout.WEST);
+        innerPanel.add(new JScrollPane(textArea), BorderLayout.CENTER);
+        //Create update button
+        if (editable) {
+            JButton btnUpdate = new JButton("Update");
+            btnUpdate.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    // Get the updated text from the text area
+                    String updatedText = textArea.getText();
+                    // Call specific function for updating the field
+                    boolean status = false;
+                    try {
+                        status = MyClient.updateUserProfile(out, userName, fieldName, updatedText, in);
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                    if (status) {
+                        JOptionPane.showMessageDialog(MainUserProfileWindow.this, labelText + " Successfully Updated!");
+                    } else {
+                        JOptionPane.showMessageDialog(MainUserProfileWindow.this, "Error, Failed to Update " + labelText + ", Please Try Again");
+                    }
+                }
+            });
+            //Add update button
+            innerPanel.add(btnUpdate, BorderLayout.EAST);
+        }
+        //Add inner panel to main container
+        container.add(innerPanel);
+    }
+}
