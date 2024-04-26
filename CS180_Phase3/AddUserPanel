@@ -10,7 +10,7 @@ import java.net.Socket;
  * AddUserPanel.java
  *
  * GUI Class used to display components for user to create new profile page
- * 
+ *
  * @author ThomasRalston L105
  * @version April 26, 2024
  */
@@ -131,13 +131,18 @@ public class AddUserPanel extends JFrame {
                         boolean firstNameStat = MyClient.isNotInteger(firstName);
                         boolean lastNameStat = MyClient.isNotInteger(String.valueOf(lastName));
                         if (firstNameStat && lastNameStat) {
-                            MyClient.addUser(out, stdIn, in, fromUser, firstName, lastName,
-                                    password, birthday, homeLocation, homeCountry, college, hobby1, hobby2, hobby3,
-                                    hobby4, gender);
-                            JOptionPane.showMessageDialog(AddUserPanel.this,
-                                    "Creation Successful! Please Login With your New Account Info!");
-                            dispose();
-                            //closePanel(addUser());
+                            if (!fromUser.isBlank() && !firstName.isBlank() && !lastName.isBlank() && !password.isBlank()
+                                    && !birthday.isBlank() && !homeLocation.isBlank() && !homeCountry.isBlank()) {
+                                MyClient.addUser(out, stdIn, in, fromUser, firstName, lastName,
+                                        password, birthday, homeLocation, homeCountry, college, hobby1, hobby2, hobby3,
+                                        hobby4, gender);
+                                JOptionPane.showMessageDialog(AddUserPanel.this,
+                                        "Creation Successful! Please Login With your New Account Info!");
+                                dispose();
+                                //closePanel(addUser());
+                            } else {
+                                JOptionPane.showMessageDialog(AddUserPanel.this, "Please Fill All Information Out");
+                            }
                         } else {
                             JOptionPane.showMessageDialog(AddUserPanel.this, "Please Enter a Non-Numeric Name");
                         }
