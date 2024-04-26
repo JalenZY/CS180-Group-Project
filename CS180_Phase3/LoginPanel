@@ -1,0 +1,123 @@
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.PrintWriter;
+/**
+ * LoginPanel.java
+ *
+ * GUI that displays the login panel of system. Verifies and checks user logins, as well 
+ * as allow for user to create new account. Properly calls respective window when create 
+ * new account is clicked. Also returns login status to MainMenu to tell program what 
+ * to display next.
+ *
+ * @author ThomasRalston L105
+ * @version April 26, 2024
+ */
+public class LoginPanel extends JFrame {
+
+    //Need Log in panel !!!!!!!!!!!!!!!!! NEED TO FIX!!!!!
+    JFrame frameLogin;
+    public BufferedReader stdIn;
+    public BufferedReader in;
+    public PrintWriter out;
+    private boolean loginStatus = false;
+    public String fromUser;
+    private LoginListener loginListener;
+    //private final Object lock = new Object(); // Lock object for synchronization
+
+
+    public LoginPanel(BufferedReader stdIn, BufferedReader in, PrintWriter out) {
+        this.stdIn = stdIn;
+        this.in = in;
+        this.out = out;
+        Login();
+    }
+
+    public void Login() {
+        frameLogin = new JFrame("Login Panel");
+
+        JLabel lblUserName = new JLabel("User Name:");
+        lblUserName.setBounds(10, 10, 100, 50);
+        JLabel lblPassword = new JLabel("Password:");
+        lblPassword.setBounds(10, 50, 100, 50);
+
+        JTextField txtUserName = new JTextField(10);
+        txtUserName.setBounds(100, 10, 100, 40);
+        JTextField txtPassword = new JTextField(10);
+        txtPassword.setBounds(100, 50, 100, 40);
+
+        JButton btnLogin = new JButton("Login");
+        btnLogin.setBounds(200, 150, 90, 50);
+
+        JButton btnNewUser = new JButton("Create Account");
+        btnNewUser.setBounds(50, 150, 150, 50);
+
+        frameLogin.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frameLogin.add(btnLogin);
+        frameLogin.add(btnNewUser);
+        frameLogin.add(lblUserName);
+        frameLogin.add(lblPassword);
+        frameLogin.add(txtUserName);
+        frameLogin.add(txtPassword);
+        frameLogin.setSize(400, 300);
+        frameLogin.setLayout(null);
+        frameLogin.setVisible(true);
+
+        btnLogin.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent a) {
+                fromUser = txtUserName.getText();
+                String password = txtPassword.getText();
+                try {
+                    //Update loginStatus based on the result of the login attempt
+                    loginStatus = MyClient.manageLogIn(in, out, fromUser, password);
+                } catch (IOException e) {
+                    JOptionPane.showMessageDialog(LoginPanel.this, "SYSTEM ERROR - Try Again Please");
+                }
+                if (loginStatus) {
+                    JOptionPane.showMessageDialog(LoginPanel.this, "Login successful!");
+                    notifyLoginSuccess(fromUser);
+                    frameLogin.dispose(); //Close the login window
+                } else {
+                    JOptionPane.showMessageDialog(LoginPanel.this, "Error - UserName or Password Is Incorrect, Try Again!");
+                    notifyLoginFailure();
+                }
+            }
+        });
+
+        btnNewUser.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                AddUserPanel addUserPanel = new AddUserPanel(stdIn, in, out);
+                addUserPanel.setVisible(true);
+            }
+        });
+
+    }
+
+    public void addLoginListener(LoginListener listener) {
+        this.loginListener = listener;
+    }
+
+    private void notifyLoginSuccess(String username) {
+        if (loginListener != null) {
+            loginListener.onLoginSuccess(username);
+        }
+    }
+
+    private void notifyLoginFailure() {
+        if (loginListener != null) {
+            loginListener.onLoginFailure();
+        }
+    }
+
+    //    // Getter method for login status
+    public boolean getLoginStatus() {
+        return loginStatus;
+    }
+
+    //Return Active user to class
+    public String getFromUser() {
+        return fromUser;
+    }
+}
