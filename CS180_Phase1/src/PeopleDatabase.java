@@ -296,7 +296,7 @@ public class PeopleDatabase {
         //Iterate through arrayList scanning each line for userID
         for (int i = 0; i < friendships.size(); i++) {
             String userString = friendships.get(i);
-            //Check if the userString contains the blockIDs
+            //Check if the userString contains IDs
             if (userString.contains(accepted.getUser1ID()) && userString.contains(accepted.getUser2ID())) {
                 //If FriendshipID is found, then don't add to list by setting boolean to true
                 //alreadyFriends = true;
@@ -387,6 +387,37 @@ public class PeopleDatabase {
         return false; //Friendship not found
     }
 
+    //Used in logic of server to check if two users have an Active friendship relationship
+    public boolean checkExistingFriend(String user1ID, String user2ID) {
+        friendships = readFileToArray(friendshipList);
+        //Iterate through arrayList scanning each line for userID
+        for (int i = 0; i < friendships.size(); i++) {
+            String userString = friendships.get(i);
+            //Check if the userString contains the userID
+            if (userString.contains(user1ID) && userString.contains(user2ID) && userString.contains("Active")) {
+                return true; //True for Friendship being found and being Non-Active
+            }
+        }
+        return false; //Friendship not found
+    }
+
+    //Check if Main User Initiated Friendship
+    public boolean checkSpecificFriend(String user1Name, String user2Name) {
+        friendships = readFileToArray(friendshipList);
+        //Iterate through arrayList scanning each line for userID
+        for (int i = 0; i < friendships.size(); i++) {
+            String userString = friendships.get(i);
+            //Check if the userString contains the userID
+            //Friendshiplist format: FID_username1_username2_status
+            String[] parts = userString.split("_");
+            if (parts[1].equals(user1Name)) {
+                return true; //User Initiated Friendship
+            }
+        }
+        return false; //User Did not Initiate Friendship
+    }
+
+
     //Method to get userID given userName
     public String userNameToUserID(String userName) {
         users = readFileToArray(userProfileList); //Takes UserProfile.txt and makes it into an array List
@@ -394,15 +425,17 @@ public class PeopleDatabase {
         for (int i = 0; i < users.size(); i++) {
             String userString = users.get(i);
             //Check if the userString contains the userName
-            if (userString.contains(userName)) {
+            String[] parts = userString.split(",");
+            if (parts[1].equals(userName)) {
                 //Format:userID,username,userFirstname,userLastname,email,password,birthday,gender,hobby1,hobby2,hobby3,hobby4,
                 // homeLocation,usersRegion,collegeName;
-                String[] parts = userString.split(",");
+                //String[] parts2 = userString.split(",");
                 return parts[0]; //Return userID
             }
         }
         return null;
     }
+
 
     //Method to get userID given userName
     public String userIDToUserName(String userID) {
@@ -421,6 +454,41 @@ public class PeopleDatabase {
         return null;
     }
 
+    //Used in logic of server to check if username exists
+    public String searchForUser(String textComponent) {
+        users = readFileToArray(userProfileList); //Takes UserProfile.txt and makes it into an array List
+        StringBuilder resultsListBuilder = new StringBuilder();
+
+        if (textComponent.equals("ALLUSERS")) {
+            for (String userString1 : users) {
+                String[] parts = userString1.split(",");
+                resultsListBuilder.append("----").append(parts[1]); //Add All UserNames
+            }
+        }
+
+        //Iterate through arrayList scanning each line for userID
+        for (String userString : users) {
+            // Check if the userString contains the userID
+            //Format:userID,username,userFirstname,userLastname,email,password,birthday,gender,hobby1,hobby2,hobby3,hobby4,
+            // homeLocation,usersRegion,collegeName;
+            String[] parts = userString.split(",");
+            if (parts[1].contains(textComponent)) { //Check userName
+                resultsListBuilder.append("----").append(parts[1]);
+            } else if (parts[2].contains(textComponent)) { //Check First Name
+                resultsListBuilder.append("----").append(parts[1]);
+            } else if (parts[3].contains(textComponent)) { //Check Last Name
+                resultsListBuilder.append("----").append(parts[1]);
+            } else if (textComponent.contains(" ")) {
+                String[] components = textComponent.split(" ");
+                if ((parts[2].contains(components[0]) || parts[2].contains(components[1])) && (parts[3].contains(components[0]) || parts[3].contains(components[1]))) {
+                    resultsListBuilder.append("----").append(parts[1]);
+                }
+            }
+        }
+        String resultsList = resultsListBuilder.toString();
+        //System.out.println(resultsList);
+        return resultsList.isEmpty() ? "Error:  ----No matching user found" : resultsList;
+    }
 
     //Used in logic of server to check if username exists
     public boolean checkUser(String userName) {
@@ -430,7 +498,8 @@ public class PeopleDatabase {
         for (int i = 0; i < users.size(); i++) {
             String userString = users.get(i);
             //Check if the userString contains the userID
-            if (userString.contains(userName)) {
+            String[] parts = userString.split(",");
+            if (parts[1].equals(userName)) {
                 return true; //User Exists
             }
         }
