@@ -5,20 +5,19 @@ import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-
+/**
+ * UserProfileWindow.java
+ *
+ * GUI Class used to display user profile information, this displays the non-sensitive
+ * Profile information. Along with the information, certain buttons will be displayed depending
+ * on weather a user can block/Unblock/Add/Remove/Accept/Decline a user/Friendship
+ *
+ * @author ThomasRalston - Juan Rodriguez L105
+ * @version April 26, 2024
+ */
 class UserProfileWindow extends JFrame {
     public String fromUser;
     public String callerClass;
-    /**
-     * UserProfileWindow.java
-     *
-     * GUI Class used to display user profile information, this displays the non-sensitive
-     * Profile information. Along with the information, certain buttons will be displayed depending
-     * on weather a user can block/Unblock/Add/Remove/Accept/Decline a user/Friendship
-     *
-     * @author ThomasRalston - Juan Rodriguez L105
-     * @version April 26, 2024
-     */
     public UserProfileWindow(BufferedReader in, PrintWriter out, String userName, String callerClass, String fromUser) throws IOException {
         this.fromUser = fromUser;
         this.callerClass = callerClass;
