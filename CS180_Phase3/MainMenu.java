@@ -12,6 +12,9 @@ import java.net.Socket;
  * @author ThomasRalston - Juan RodriguezL105
  * @version April 26, 2024
  */
+//////
+//////PROJECT FINISHED - 4/26/24 - TRalston//////////
+//////
 public class MainMenu extends JFrame {
     private Socket socket;
     private PrintWriter out;
