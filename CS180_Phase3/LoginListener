@@ -1,0 +1,14 @@
+import java.util.EventListener;
+/**
+ * LoginListener.java
+ *
+ *Acts as in interface for LogIn panel to call on - Used to determine next actions in 
+ * MainMenu page after a logIn attempt has been made
+ *
+ * @author ThomasRalston L105
+ * @version April 26, 2024
+ */
+public interface LoginListener extends EventListener {
+    void onLoginSuccess(String username);
+    void onLoginFailure();
+}
