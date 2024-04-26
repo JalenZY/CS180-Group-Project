@@ -1,0 +1,46 @@
+import java.io.PrintWriter;
+/**
+ * MyServerInterface.java
+ *
+ * Lists all the methods and their parameters used by MyServer.java
+ *
+ * @author ThomasRalston L105
+ * @version April 26, 2024
+ */
+public interface MyServerInterface {
+    void handleMessage(String message, PrintWriter out);
+
+    void handleCheckActiveFriendship(String[] parts, PrintWriter out);
+
+    void handleCheckFriendship(String[] parts, PrintWriter out);
+
+    void handleCheckSpecificFriendship(String[] parts, PrintWriter out);
+
+    void handleCheckBlock(String[] parts, PrintWriter out);
+
+    void handleCheckSpecificBlock(String[] parts, PrintWriter out);
+
+    void handleSearchForUser(String[] parts, PrintWriter out);
+
+    void handlePrintUserProfile(String[] parts, PrintWriter out);
+
+    void handlePrintFriends(String[] parts, PrintWriter out);
+
+    void handlePrintConversation(String[] parts, PrintWriter out);
+
+    void handleSendMessage(String[] parts, PrintWriter out);
+
+    void handleCheckUser(String[] parts, PrintWriter out);
+
+    void handleUserLogin(String[] parts, PrintWriter out);
+
+    void handleAddUser(String[] parts, PrintWriter out);
+
+    void handleRemoveUser(String[] parts, PrintWriter out);
+
+    void handleUpdateUserProfile(String[] parts, PrintWriter out);
+
+    void handleBlockUnblockUser(String[] parts, PrintWriter out, boolean block);
+
+    void handleManageFriendship(String[] parts, PrintWriter out, int action);
+}
