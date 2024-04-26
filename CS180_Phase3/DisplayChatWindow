@@ -8,12 +8,12 @@ import java.io.PrintWriter;
  *
  * GUI Class used to display conversation between users
  *
- * @author ThomasRalston - Juan Rodriguez L105
+ * @author ThomasRalston L105
  * @version April 26, 2024
  */
 public class DisplayChatWindow extends JFrame {
     private JTextArea textArea;
-   
+
     public DisplayChatWindow(PrintWriter out, BufferedReader in, String fromUser, String user2) {
         setTitle("Chat Between " + fromUser + " And " + user2);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
