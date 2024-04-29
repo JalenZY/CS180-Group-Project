@@ -127,14 +127,19 @@ public class MyServer {
     private static void handleCheckActiveFriendship(String[] parts, PrintWriter out) {
         String fromUser = parts[1];
         String user2 = parts[2];
-        boolean existingFriendship = peopleDb.checkExistingFriend(fromUser, user2);
+        String fromUserID = peopleDb.userNameToUserID(fromUser);
+        String user2ID = peopleDb.userNameToUserID(user2);
+        boolean existingFriendship = peopleDb.checkExistingFriend(fromUserID, user2ID);
         out.println(existingFriendship); //True for Friendship
     }
 
     private static void handleCheckFriendship(String[] parts, PrintWriter out) {
         String fromUser = parts[1];
         String user2 = parts[2];
-        boolean friendship = peopleDb.checkFriend(fromUser, user2);
+        String fromUserID = peopleDb.userNameToUserID(fromUser);
+        String user2ID = peopleDb.userNameToUserID(user2);
+        boolean friendship = peopleDb.checkFriend(fromUserID, user2ID);
+        System.out.println(friendship);
         out.println(friendship); //True for Friendship
     }
 
@@ -186,7 +191,7 @@ public class MyServer {
     private static void handlePrintFriends(String[] parts, PrintWriter out) {
         String username= parts[1];
         String user1ID = peopleDb.userNameToUserID(username);
-        ArrayList<String> friendsList = peopleDb.printFriends(user1ID);
+        ArrayList<String> friendsList = peopleDb.printFriendsList(user1ID);
 
         StringBuilder friendsString = new StringBuilder(); //Convert ArrayList to String to Print
 //        for (String item : friendsList) {
@@ -256,7 +261,7 @@ public class MyServer {
             out.println();
             out.flush(); //Ensure data is sent to the client.
             return;
-        } else if (!peopleDb.checkFriend(user1ID, user2ID)) { //Check if users are friends
+        } else if (!peopleDb.checkActiveFriends(user1ID, user2ID)) { //Check if users are friends
             out.write("Error: Friendship Does Not Exist");
             out.println();
             out.flush(); //Ensure data is sent to the client.
