@@ -521,7 +521,7 @@ public class PeopleDatabase {
         return false; //User doesn't exist
     }
 
-    public ArrayList<String> printFriends(String userID) {
+    public boolean checkActiveFriends(String userID, String user2ID) {
         friendships = readFileToArray(friendshipList);
         //Iterate through arrayList scanning each line for userID
         ArrayList<String> friends = new ArrayList<>();
@@ -531,10 +531,28 @@ public class PeopleDatabase {
             if (userString.contains(userID)) {
                 //Format: FID_user39_user73_Active_2024-04-20 23:08:00
                 String[] parts = userString.split("_");
-                if (!parts[1].equals(userID) && parts[3].equals("Active")) {
+                if (userString.contains(userID) && userString.contains(user2ID) && parts[3].equals("Active")) {
+                    return (true);
+                }
+            }
+        }
+        return (false);
+    }
+
+    public ArrayList<String> printFriendsList(String userID) {
+        friendships = readFileToArray(friendshipList);
+        //Iterate through arrayList scanning each line for userID
+        ArrayList<String> friends = new ArrayList<>();
+        for (int i = 0; i < friendships.size(); i++) {
+            String userString = friendships.get(i);
+            //Check if the userString contains the userID
+            if (userString.contains(userID)) {
+                //Format: FID_user39_user73_Active_2024-04-20 23:08:00
+                String[] parts = userString.split("_");
+                if (!parts[1].equals(userID)) {
                     String friendUserName = userIDToUserName(parts[1]);
                     friends.add(friendUserName);
-                } else if (!parts[2].equals(userID) && parts[3].equals("Active")) { //If userID does not equal given
+                } else if (!parts[2].equals(userID)) { //If userID does not equal given
                     // userID, but given userID is in string and status is an active friendship, then print add name to list
                     String friendUserName = userIDToUserName(parts[2]);
                     friends.add(friendUserName);
@@ -543,11 +561,6 @@ public class PeopleDatabase {
         }
         return (friends);
     }
-
-    //ADD FRIENDS COMPILATION LIST!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-
-    //ADD BLOCKED COMPILATION LIST!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
 } //EndClass
