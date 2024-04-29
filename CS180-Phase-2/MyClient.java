@@ -17,7 +17,7 @@ public class MyClient {
             System.out.println("Error connecting to server: " + e.getMessage());
         }
     }
-    
+
     public static boolean manageLogIn(BufferedReader in, PrintWriter out, String fromUserName, String password) throws IOException {
         out.println("USERLOGIN###" + fromUserName + "###" + password);
         String serverResponse = in.readLine();
@@ -107,13 +107,13 @@ public class MyClient {
     public static String checkUserFriendActions(PrintWriter out, BufferedReader in, String fromUser, String userName) throws IOException {
         String existingFriendship = "false";
         String initiated = "false";
-        out.println("CHECKFRIEND###" + fromUser + "###" + userName);
+        out.println("CHECKFRIENDSHIP###" + fromUser + "###" + userName);
         String friendship = in.readLine(); //Returns true if users have Friendship
         if (friendship.equals("true")) {
-            out.println("CHECKACTIVEFRIEND###" + fromUser + "###" + userName);
+            out.println("CHECKACTIVEFRIENDSHIP###" + fromUser + "###" + userName);
             existingFriendship = in.readLine(); //Returns true if users have Active Friendship
             if (existingFriendship.equals("false")) { //Friendship is Pending
-                out.println("CHECKSPECIFICFRIEND###" + fromUser + "###" + userName);
+                out.println("CHECKSPECIFICFRIENDSHIP###" + fromUser + "###" + userName);
                 initiated = in.readLine(); //Returns true if users initiated Friendship
                 if (initiated.equals("false")) {
                     return ("BothOptions");
@@ -150,6 +150,7 @@ public class MyClient {
         out.println("FRIENDSPRINT###" + userName);
         String friendsString = "";
         friendsString = in.readLine();
+        System.out.println(friendsString);
         return (friendsString);
     }
 
