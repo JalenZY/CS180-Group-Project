@@ -12,3 +12,8 @@ user73,trals,Thomas ,Ralston,asdf,2002-11-22,Male,Reading,Legos,Swimming,Buildin
 user60,tralston23,Thomas,Ralston,Space23,11/22/2002,Male,Reading,Painting,Reading,Reading,Indiana,United States,Purdue,
 user64,tralston56,Thomas,William,ASDFFWW,11/22/2002,Male,Reading,Reading,Reading,Reading,Indy,MERICA,Purdue,
 user48,Timmy,THomas,Ralssssstonnnnn,Dew,11/22/2002,Male,Painting,Cooking,Video Games,Drawing,Indy,United States,Purdue,
+user61,tralston02,Thomas,Ralston,Space25,11/22/2002,Male,Soccer,Legos,Building Models,Reading,Indiana,United States,Purdue,
+user49,Tam26,Tam,William,Space26,11/21/2004,Female,Dancing,Reading,Gardening,Baking,Indiana,France,Purdue,
+user2,Tam36,Tam,Ralston,Space36,11/22/2004,Female,Reading,Gardening,Drawing,Cycling,Indiana,UnitedStates,IU,
+user87,Tralston25,Thomas,Ralston,Space25,11/22/2002,Male,Soccer,Traveling,Dancing,Legos,Indiana,UnitedStatesOfAmerica!!!,Purdue University,
+user62,Emily46,Emily,Ralston,Space46,11/20/2002,Female,Writing,Reading,Drawing,Legos,Indiana,Unitesd Stated,IU,
